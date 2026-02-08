@@ -7,6 +7,7 @@ import com.learningmat.ecommerce.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('STAFF')")
     public ApiResponse<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
         Product prod = productService.createProduct(productRequest);
         return ApiResponse.<Product>builder()
@@ -29,6 +31,7 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
     public ApiResponse<List<Product>> getProduct() {
         return ApiResponse.<List<Product>>builder()
                 .result(productService.getProduct())
@@ -37,6 +40,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @PreAuthorize("hasRole('USER')")
     public ApiResponse<Product> getProductById(@PathVariable int productId) {
         return ApiResponse.<Product>builder()
                 .result(productService.getProductById(productId))
@@ -44,6 +48,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
+    @PreAuthorize("hasRole('STAFF')")
     public ApiResponse<Product> updateProduct(@PathVariable int productId,
             @RequestBody @Valid ProductRequest productRequest) {
         return ApiResponse.<Product>builder()
@@ -53,10 +58,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
+    @PreAuthorize("hasRole('STAFF')")
     public ApiResponse<String> deleteProduct(@PathVariable int productId) {
         productService.deleteProduct(productId);
         return ApiResponse.<String>builder()
-                .result("Product has been deleted")
                 .message("Product delete successfully")
                 .build();
     }

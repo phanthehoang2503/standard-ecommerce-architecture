@@ -7,6 +7,7 @@ import com.learningmat.ecommerce.model.User;
 import com.learningmat.ecommerce.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<User> getUser(@PathVariable String userId) {
         return ApiResponse.<User>builder()
                 .result(userService.getUser(userId))
@@ -40,6 +42,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('USER')")
     ApiResponse<User> updateUser(@PathVariable String userId, @RequestBody @Valid UserUpdateRequest request) {
         return ApiResponse.<User>builder()
                 .result(userService.updateUser(userId, request))

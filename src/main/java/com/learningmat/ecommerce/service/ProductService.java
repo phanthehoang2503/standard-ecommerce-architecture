@@ -7,6 +7,8 @@ import com.learningmat.ecommerce.mapper.ProductMapper;
 import com.learningmat.ecommerce.model.Product;
 import com.learningmat.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.OptimisticLocking;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,8 +41,8 @@ public class ProductService {
     }
 
     public void deleteProduct(int id) {
-        if (!productRepository.existsById(id)) {
-            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-        }
+        Product prod = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        productRepository.delete(prod);
     }
 }
