@@ -11,5 +11,6 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     Product toProduct(ProductRequest request);
 
+    @Mapping(target = "id", ignore = true)
     void updateProduct(@MappingTarget Product product, ProductRequest productRequest);
 }

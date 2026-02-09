@@ -27,7 +27,12 @@ public class SecurityConfig {
 
     protected String SIGNER_KEY = "3213123219841204571290479012845790112570321512232109471920701927";
 
-    private final String[] PUBLIC_ENDPOINT = { "/users", "/auth/token", "/auth/introspect" };
+    private final String[] PUBLIC_ENDPOINT = {
+            "/users", "/auth/token", "/auth/introspect",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -38,8 +43,11 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+                .requestMatchers(HttpMethod.GET, "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html")
+                .permitAll()
                 .anyRequest().authenticated());
-
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
         http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
@@ -68,7 +76,6 @@ public class SecurityConfig {
     @Bean
     RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy(
-                "ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER"
-        );
+                "ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER");
     }
 }

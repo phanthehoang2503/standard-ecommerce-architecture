@@ -7,8 +7,6 @@ import com.learningmat.ecommerce.mapper.ProductMapper;
 import com.learningmat.ecommerce.model.Product;
 import com.learningmat.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.OptimisticLocking;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
