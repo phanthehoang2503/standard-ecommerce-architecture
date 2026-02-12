@@ -4,6 +4,7 @@ import com.learningmat.ecommerce.module.cart.CartService;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.module.cart.Cart;
+import com.learningmat.ecommerce.module.inventory.InventoryService;
 import com.learningmat.ecommerce.module.user.User;
 import com.learningmat.ecommerce.module.cart.CartRepository;
 import com.learningmat.ecommerce.module.user.UserRepository;
@@ -22,6 +23,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final CartService cartService;
+    private final InventoryService inventoryService;
 
     @Transactional
     public Order placeOrder(String username) {
@@ -31,7 +33,11 @@ public class OrderService {
         // do they have the cart?
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_CART_NOTFOUND));
-        // if yes then create an order
+        cart.getItems().forEach(item ->
+                inventoryService.reduceStock(
+                        item.getProduct().getId(),// get prod id
+                        item.getQuantity())); // get quantity
+        // create an order
         Order order = Order.builder()
                 .user(user)
                 .status("Pending")
