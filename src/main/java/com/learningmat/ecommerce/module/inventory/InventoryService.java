@@ -10,13 +10,14 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
 
-    public void reduceStock(int productId, int quantity) {
+    public void reduceStock(Long productId, int quantity) {
         // find product from Product table and pass it to inventory
         Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // if the stock running low then throw error
-        if (inventory.getQuantity() < quantity) throw new AppException(ErrorCode.OUT_OF_STOCK);
+        if (inventory.getQuantity() < quantity)
+            throw new AppException(ErrorCode.OUT_OF_STOCK);
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
         inventoryRepository.save(inventory);

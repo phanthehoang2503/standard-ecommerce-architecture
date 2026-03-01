@@ -18,6 +18,7 @@ public class Inventory {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "id", columnDefinition = "BIGINT")
     private Product product;
 
     private int quantity;
