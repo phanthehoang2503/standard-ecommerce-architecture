@@ -6,6 +6,7 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,8 @@ public class AuthenticateService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @NonFinal
-    protected String SIGNER_KEY = "3213123219841204571290479012845790112570321512232109471920701927";
+    @Value("${jwt.signerKey}")
+    protected String SIGNER_KEY;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.username())
