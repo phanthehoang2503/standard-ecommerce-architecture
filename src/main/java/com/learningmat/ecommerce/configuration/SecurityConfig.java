@@ -19,13 +19,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    protected String SIGNER_KEY = "3213123219841204571290479012845790112570321512232109471920701927";
+    @Value("${jwt.signerKey}")
+    protected String SIGNER_KEY;
 
     private final String[] PUBLIC_ENDPOINT = {
             "/users", "/auth/token", "/auth/introspect",
@@ -42,13 +44,18 @@ public class SecurityConfig {
     // let all request past through filter
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
-                .requestMatchers(HttpMethod.GET, "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html")
-                .permitAll()
-                .anyRequest().authenticated());
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
+        http.authorizeHttpRequests(
+                request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
+                        .permitAll()
+                        .anyRequest().authenticated());
+        http
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(
+                                        jwtAuthenticationConverter())));
         http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
