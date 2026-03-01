@@ -25,18 +25,19 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getProductById(int id) {
+    public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
-    public Product updateProduct(int id, ProductRequest productRequest) {
+    public Product updateProduct(Long id, ProductRequest productRequest) {
         Product prod = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        productMapper.updateProduct(prod, productRequest);
         return productRepository.save(prod);
     }
 
-    public void deleteProduct(int id) {
+    public void deleteProduct(Long id) {
         Product prod = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         productRepository.delete(prod);
