@@ -1,0 +1,32 @@
+<configuration>
+  <property name="LOG_PATH" value="./logs" />
+
+  <!-- Console -->
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>
+        %d{dd-MM-yyyy ss:mm:HH} [%thread] %-5level %logger{36} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <!-- Write file -->
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_PATH}/app.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH}/app-%d{dd-MM-yyyy}.log</fileNamePattern>
+      <!-- After 30 days? COOKED-->
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>
+        %d{dd-MM-yyyy ss:mm:HH} [%thread] %-5level %logger{36} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="Console" />
+    <appender-ref ref="RollingFile" />
+  </root>
+</configuration>

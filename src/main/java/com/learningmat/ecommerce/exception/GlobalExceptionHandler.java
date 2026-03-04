@@ -1,33 +1,30 @@
 package com.learningmat.ecommerce.exception;
 
 import com.learningmat.ecommerce.dto.response.ApiResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.access.AccessDeniedException;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     // Occur when @valid inside product controller caught invalid data
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse<Void>> handlingValidation(MethodArgumentNotValidException exception) {
-        String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+    ResponseEntity<ApiResponse<Map<String, String>>> handlingValidation(MethodArgumentNotValidException exception) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
 
-        try {
-            errorCode = ErrorCode.valueOf(enumKey);
-        } catch (IllegalArgumentException e) {
-
-        }
-
-        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
-        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
+                .code(400).message("Invalid data").result(errors).build();
+        return ResponseEntity.badRequest().body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)
@@ -49,5 +46,14 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode()).body(apiResponse);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse<Void>> handlingAccessDeniedException(AccessDeniedException exception) {
+        return ResponseEntity.status(ErrorCode.FORBIDDEN_ACCESS.getStatusCode())
+                .body(ApiResponse.<Void>builder()
+                        .code(ErrorCode.FORBIDDEN_ACCESS.getCode())
+                        .message("Unauthenticated")
+                        .build());
     }
 }
