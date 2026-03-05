@@ -5,6 +5,8 @@ import com.learningmat.ecommerce.dto.response.ProductResponse;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ProductMapper;
+import com.learningmat.ecommerce.module.category.Category;
+import com.learningmat.ecommerce.module.category.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +22,17 @@ import org.springframework.stereotype.Service;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
 
     public Product createProduct(ProductRequest productRequest) {
         try {
+            Category category = categoryRepository.findById(productRequest.categoryId())
+                    .orElseThrow(() -> {
+                        log.warn("The category [{}] not found in system please check again", productRequest.categoryId());
+                        return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
+                    });
             Product prod = productMapper.toProduct(productRequest);
+            prod.setCategory(category);
             Product savedProd = productRepository.save(prod);
             log.info("Create product successful with ID: {}", savedProd.getId());
             return savedProd;
@@ -53,6 +62,12 @@ public class ProductService {
                         log.warn("Failed update... can't find product with id: {}", id);
                         return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
                     });
+            Category category = categoryRepository.findById(productRequest.categoryId())
+                            .orElseThrow(() -> {
+                                log.warn("Category [{}] not found in the system.", productRequest.categoryId());
+                                return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
+                            });
+            prod.setCategory(category);
             productMapper.updateProduct(prod, productRequest);
             Product updatedProduct = productRepository.save(prod);
             log.info("Updated complete product with id: {}", id);
