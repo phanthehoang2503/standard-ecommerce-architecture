@@ -9,6 +9,7 @@ import com.learningmat.ecommerce.module.user.User;
 import com.learningmat.ecommerce.module.cart.CartRepository;
 import com.learningmat.ecommerce.module.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -27,43 +29,61 @@ public class OrderService {
 
     @Transactional
     public Order placeOrder(String username) {
+        log.info("The user [{}] start to place an order", username);
         // find user
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
-        // do they have the cart?
-        Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_CART_NOTFOUND));
-        cart.getItems().forEach(item ->
-                inventoryService.reduceStock(
-                        item.getProduct().getId(),// get prod id
-                        item.getQuantity())); // get quantity
-        // create an order
-        Order order = Order.builder()
-                .user(user)
-                .status("Pending")
-                .orderDate(LocalDateTime.now())
-                .orderItems(new ArrayList<>())
-                .build();
-        // take items from user's cart and then put it on the list of other items
-        List<OrderItem> orderItems = cart.getItems().stream()
-                .map(item -> OrderItem.builder()
-                        .order(order)
-                        .product(item.getProduct())
-                        .quantity(item.getQuantity())
-                        .price(item.getProduct().getPrice()).build())
-                .toList();
-        order.setOrderItems(orderItems);
-        // look through the list and calculate the total
-        Long total = orderItems.stream()
-                .mapToLong(item -> (long) (item.getQuantity() * item.getPrice()))
-                .sum();
-        order.setTotalAmount(total);
-        // Finally save an order
-        Order savedOrder = orderRepository.save(order);
+        try{
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> {
+                        log.warn("User not found, maybe their username ({}) not in the DB?", username);
+                        return new AppException(ErrorCode.USER_NOTFOUND);
+                    });
+            // do they have the cart?
+            Cart cart = cartRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> {
+                        log.warn("User [{}] don't have a cart yet", username);
+                        return new AppException(ErrorCode.USER_CART_NOTFOUND);
+                    });
+            log.info("Found user [{}] cart, start transaction...", username);
 
-        // clear cart after placed an order
-        cartService.clearCart(username);
-        return savedOrder;
+            cart.getItems().forEach(
+                    item -> inventoryService.reduceStock(
+                            item.getProduct().getId(),
+                            item.getQuantity()
+                    )
+            );
+
+            Order order = Order.builder()
+                    .user(user)
+                    .status("PENDING")
+                    .orderDate(LocalDateTime.now())
+                    .orderItems(new ArrayList<>())
+                    .build();
+            List<OrderItem> orderItems = cart.getItems().stream()
+                    .map(item -> OrderItem.builder()
+                            .order(order)
+                            .product(item.getProduct())
+                            .quantity(item.getQuantity())
+                            .price(item.getProduct().getPrice())
+                            .build()
+                    ).toList();
+            order.setOrderItems(orderItems);
+            Long total = orderItems.stream()
+                    .mapToLong(item ->
+                            (long) (item.getPrice() * item.getQuantity())
+                    ).sum();
+            order.setTotalAmount(total);
+            Order savedOrder = orderRepository.save(order);
+            log.info("User [{}] placed order complete, OrderID [{}], Total Amount [{}]",
+                    username, savedOrder.getId(), savedOrder.getTotalAmount());
+            cartService.clearCart(username);
+            return savedOrder;
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("System error when placing an order for user [{}]", username);
+            throw e;
+        }
+
     }
 
     public List<Order> getOrders(String username) {
