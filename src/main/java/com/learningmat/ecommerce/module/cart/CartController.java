@@ -43,7 +43,7 @@ public class CartController {
 
     @DeleteMapping("/remove/{productId}")
     @Operation(summary = "remove item from cart")
-    public ApiResponse<Cart> removeFromCart(@AuthenticationPrincipal Jwt jwt,@PathVariable int productId) {
+    public ApiResponse<Cart> removeFromCart(@AuthenticationPrincipal Jwt jwt,@PathVariable Long productId) {
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         String username = jwt.getSubject();
         return ApiResponse.<Cart>builder()
