@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.FORBIDDEN_ACCESS.getStatusCode())
                 .body(ApiResponse.<Void>builder()
                         .code(ErrorCode.FORBIDDEN_ACCESS.getCode())
-                        .message("Unauthenticated")
+                        .message("You don't have permission")
                         .build());
     }
 }

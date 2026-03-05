@@ -1,15 +1,18 @@
 package com.learningmat.ecommerce.module.product;
 
 import com.learningmat.ecommerce.dto.request.ProductRequest;
+import com.learningmat.ecommerce.dto.response.ProductResponse;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -30,8 +33,12 @@ public class ProductService {
         }
     }
 
-    public List<Product> getProduct() {
-        return productRepository.findAll();
+    public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        // return productRepository.findAll(pageable);
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(productMapper::toProductResponse);
     }
 
     public Product getProductById(Long id) {
