@@ -3,11 +3,13 @@
 Dự án Ecommerce Backend thiết kế theo chuẩn công nghiệp, tập trung vào tính Module hóa, bảo mật và hiệu năng.
 
 ## Mô tả hệ thống
-Đây là hệ thống quản lý bán hàng (Backend) tập trung vào việc xử lý các quy trình nghiệp vụ cốt lõi của một nền tảng thương mại điện tử. Mục tiêu chính của dự án là xây dựng một hệ thống API ổn định, dữ liệu nhất quán và dễ dàng mở rộng.
+Hệ thống quản lý bán hàng tập trung vào việc xử lý các quy trình nghiệp vụ cốt lõi của một nền tảng thương mại điện tử. Mục tiêu chính là xây dựng một hệ thống API ổn định, dữ liệu nhất quán và dễ dàng mở rộng.
 Các mảng nghiệp vụ chính bao gồm:
 - **Hàng hóa**: Quản lý chi tiết sản phẩm, danh mục và tồn kho.
 - **Giao dịch**: Xử lý giỏ hàng và quy trình đặt hàng tối ưu.
 - **Bảo mật**: Hệ thống xác thực và phân quyền người dùng.
+
+Frontend của hệ thống được generate nhờ AI dựa trên danh sách endpoint từ backend
 
 ## Kiến trúc hệ thống
 
