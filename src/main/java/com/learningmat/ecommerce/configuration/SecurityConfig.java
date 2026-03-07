@@ -26,63 +26,64 @@ import org.springframework.beans.factory.annotation.Value;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+	@Value("${jwt.signerKey}")
+	protected String SIGNER_KEY;
 
-    private final String[] PUBLIC_ENDPOINT = {
-            "/users", "/auth/token", "/auth/introspect",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html"
-    };
+	private final String[] PUBLIC_ENDPOINT = {
+			"/users", "/auth/token", "/auth/introspect",
+			"/v3/api-docs/**",
+			"/categories",
+			"/products",
+			"/swagger-ui/**",
+			"/swagger-ui.html"
+	};
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(10);
+	}
 
-    // let all request past through filter
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(
-                request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html")
-                        .permitAll()
-                        .anyRequest().authenticated());
-        http
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(
-                                        jwtAuthenticationConverter())));
-        http.csrf(AbstractHttpConfigurer::disable);
-        return http.build();
-    }
+	// let all request past through filter
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests(
+				request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT)
+						.permitAll()
+						.requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINT)
+						.permitAll()
+						.anyRequest().authenticated());
+		http
+				.oauth2ResourceServer(oauth2 -> oauth2
+						.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+								.jwtAuthenticationConverter(
+										jwtAuthenticationConverter())));
+		http.csrf(AbstractHttpConfigurer::disable);
+		return http.build();
+	}
 
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+	@Bean
+	JwtDecoder jwtDecoder() {
+		SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
+		return NimbusJwtDecoder
+				.withSecretKey(secretKeySpec)
+				.macAlgorithm(MacAlgorithm.HS512)
+				.build();
+	}
 
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter gAC = new JwtGrantedAuthoritiesConverter();
-        gAC.setAuthorityPrefix("ROLE_"); // change prefix from SCOPE_ to ROLE_
+	@Bean
+	JwtAuthenticationConverter jwtAuthenticationConverter() {
+		JwtGrantedAuthoritiesConverter gAC = new JwtGrantedAuthoritiesConverter();
+		gAC.setAuthorityPrefix("ROLE_"); // change prefix from SCOPE_ to ROLE_
 
-        JwtAuthenticationConverter jAC = new JwtAuthenticationConverter();
+		JwtAuthenticationConverter jAC = new JwtAuthenticationConverter();
 
-        jAC.setJwtGrantedAuthoritiesConverter(gAC);
-        return jAC;
-    }
+		jAC.setJwtGrantedAuthoritiesConverter(gAC);
+		return jAC;
+	}
 
-    @Bean
-    RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.fromHierarchy(
-                "ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER");
-    }
+	@Bean
+	RoleHierarchy roleHierarchy() {
+		return RoleHierarchyImpl.fromHierarchy(
+				"ROLE_ADMIN > ROLE_STAFF \n ROLE_STAFF > ROLE_USER");
+	}
 }

@@ -6,6 +6,8 @@ import com.learningmat.ecommerce.dto.request.UserUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,10 +42,30 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<User> updateUser(@PathVariable String userId, @RequestBody @Valid UserUpdateRequest request) {
         return ApiResponse.<User>builder()
                 .result(userService.updateUser(userId, request))
+                .build();
+    }
+
+    @GetMapping("/my-profile")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    ApiResponse<User> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getSubject();
+        return ApiResponse.<User>builder()
+                .result(userService.getMyProfile(username))
+                .build();
+    }
+
+    @PutMapping("/my-profile")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    ApiResponse<User> updateMyProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody @Valid UserUpdateRequest request) {
+        String username = jwt.getSubject();
+        return ApiResponse.<User>builder()
+                .result(userService.updateMyProfile(username, request))
                 .build();
     }
 }

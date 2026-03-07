@@ -55,4 +55,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User getMyProfile(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() ->
+            new AppException(ErrorCode.USER_NOTFOUND));
+    }
+
+    public User updateMyProfile(String username, UserUpdateRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
+        userMapper.updateUser(user, request);
+
+        if (request.password() != null) {
+            user.setPassword(passwordEncoder.encode(request.password()));
+        }
+        return userRepository.save(user);
+    }
 }
