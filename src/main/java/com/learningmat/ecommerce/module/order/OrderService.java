@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -91,5 +92,24 @@ public class OrderService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
 
         return orderRepository.findByUserId(user.getId());
+    }
+
+    public Order getOrderDetails(String username, Long orderId) {
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> {
+                        log.warn("Order with ID [{}] not found", orderId);
+                        return new AppException(ErrorCode.ORDER_NOT_FOUND);
+                    });
+            if (!Objects.equals(order.getUser().getUsername(), username)) {
+                throw new AppException(ErrorCode.FORBIDDEN_ACCESS);
+            }
+            return order;
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("Something go wrong [Order id: {}, error: {}]", orderId, e.getMessage());
+            throw e;
+        }
     }
 }

@@ -20,16 +20,16 @@ Thiết kế theo mô hình **Layered Architecture** kết hợp với **Domain 
 
 ### Quản lý Sản phẩm
 - **Phân trang**: thông qua `Pageable` để tối ưu hóa truy vấn dữ liệu (lấy danh sách sản phẩm).
-- **Bộ lọc**: Cho phép người dùng tùy chỉnh hiển thị của danh sách (price, name, rating...) trên URL (dự định thêm FE).
+- **Bộ lọc**: Cho phép người dùng tùy chỉnh hiển thị của danh sách trên URL.
 
 ### Giỏ hàng & Quy trình Đặt hàng
 - **Tính năng đặt hàng**: Đảm bảo tính nhất quán (ACID) khi đặt hàng: trừ tồn kho, tạo đơn hàng và xóa giỏ hàng trong cùng một đơn vị công việc.
 - **Kho**: Kiểm tra và cập nhật tồn kho trong quá trình xử lý giao dịch.
 
 ### Bảo mật & Giám sát
-- **Xác thực**: Cơ chế xác thực không trạng thái (Stateless) JWT.
+- **Xác thực**: Cơ chế xác thực không trạng thái JWT.
 - **Logging**: Hệ thống Logback ghi vết toàn bộ hành trình người dùng và phát hiện lỗi hệ thống thời gian thực.
-- **Xử lý lỗi cục bộ**: Trả về ApiResponse cho các trường hợp ngoại lệ (Unchecked Exception).
+- **Xử lý lỗi cục bộ**: Trả về ApiResponse cho các trường hợp ngoại lệ.
 
 ## Tech stack trong dự án
 

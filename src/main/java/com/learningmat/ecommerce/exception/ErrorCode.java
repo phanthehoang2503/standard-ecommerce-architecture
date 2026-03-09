@@ -15,14 +15,14 @@ public enum ErrorCode {
     INVALID_PASSWORD(1005, "Password should contain 6 character", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_FOUND(1006, "Product not found", HttpStatus.NOT_FOUND),
     CATEGORY_NOT_FOUND(1013, "Category not available in system", HttpStatus.NOT_FOUND),
+    ORDER_NOT_FOUND(1014, "Order not found", HttpStatus.NOT_FOUND),
 
     USER_EXISTED(1007, "Username already exist...", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(1009, "Fail to login", HttpStatus.UNAUTHORIZED),
     OUT_OF_STOCK(1011, "Out of stock", HttpStatus.BAD_REQUEST),
     USER_NOTFOUND(1008, "User not found", HttpStatus.NOT_FOUND),
     FORBIDDEN_ACCESS(1012, "Access denied", HttpStatus.FORBIDDEN),
-    USER_CART_NOTFOUND(1010, "Users cart not found", HttpStatus.NOT_FOUND)
-    ;
+    USER_CART_NOTFOUND(1010, "Users cart not found", HttpStatus.NOT_FOUND);
 
     private int code;
     private String message;

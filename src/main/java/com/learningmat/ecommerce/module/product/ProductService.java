@@ -42,11 +42,14 @@ public class ProductService {
         }
     }
 
-    public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
+    public Page<ProductResponse> getProducts(
+            int page, int size, String sortBy, String direction,
+            String keyword, Long categoryId) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         // return productRepository.findAll(pageable);
-        Page<Product> productPage = productRepository.findAll(pageable);
+        // Page<Product> productPage = productRepository.findAll(pageable);
+        Page<Product> productPage = productRepository.searchProducts(categoryId, keyword, pageable);
         return productPage.map(productMapper::toProductResponse);
     }
 

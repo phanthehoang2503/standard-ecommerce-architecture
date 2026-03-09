@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../lib/api';
 
 export default function Profile() {
@@ -21,26 +20,22 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem('token');
-      let username = 'User';
-      if (token) {
-        try {
-          const decoded: any = jwtDecode(token);
-          username = decoded.sub || 'User'; // The backend puts username in the 'sub' claim
-        } catch (e) {
-          console.error('Failed to decode token', e);
-        }
+      const userRes = await api.get('/users/my-profile').catch(() => null);
+      if (userRes && userRes.data) {
+        const userData = userRes.data.result || userRes.data;
+        setUser({
+          name: userData.fullName || userData.username || 'User',
+          email: `${userData.username || 'user'}@example.com`,
+          dob: userData.dob
+        });
+      } else {
+        setUser({ name: 'User', email: 'user@example.com' })
       }
 
-      setUser({ name: username, email: `${username}@example.com` });
-
       const ordersRes = await api.get('/order/my-orders').catch(() => ({
-        data: [
-          { id: 'ORD-001', date: '2026-03-01', status: 'Delivered', total: 199.99 },
-          { id: 'ORD-002', date: '2026-03-05', status: 'Processing', total: 388.50 },
-        ]
+        data: []
       }));
-      setOrders(ordersRes.data);
+      setOrders(ordersRes.data?.result || ordersRes.data || []);
     } catch (error) {
       console.error('Failed to fetch profile', error);
     } finally {
@@ -58,7 +53,9 @@ export default function Profile() {
         <div className="md:w-1/3">
           <div className="bg-white p-6 rounded border border-slate-200 shadow-sm mb-6">
             <h2 className="text-lg font-bold text-slate-800 mb-1">{user?.name}</h2>
-            <p className="text-slate-500 text-sm mb-4">{user?.email}</p>
+            <p className="text-slate-500 text-sm mb-1">{user?.email}</p>
+            {user?.dob && <p className="text-slate-400 text-xs mb-4">DOB: {user.dob}</p>}
+            {!user?.dob && <div className="mb-4"></div>}
 
             <button className="w-full py-1.5 bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded hover:bg-slate-100 transition-colors">
               Edit Profile
@@ -104,9 +101,12 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="font-semibold text-slate-900">${order.total.toFixed(2)}</div>
-                      <button className="text-xs font-medium text-primary-600 hover:text-primary-700 border border-primary-100 bg-primary-50 px-3 py-1.5 rounded transition-colors cursor-pointer hover:bg-primary-100">
+                      <Link
+                        to={`/order/${order.id}`}
+                        className="text-xs font-medium text-primary-600 hover:text-primary-700 border border-primary-100 bg-primary-50 px-3 py-1.5 rounded transition-colors cursor-pointer hover:bg-primary-100"
+                      >
                         View
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 ))

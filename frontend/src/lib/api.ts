@@ -20,4 +20,16 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Response interceptor to clear token on 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      // Optionally could reload page here, but wiping token usually fixes the immediate error loops
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

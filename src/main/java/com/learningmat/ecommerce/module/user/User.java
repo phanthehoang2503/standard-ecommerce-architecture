@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private String id;

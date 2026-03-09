@@ -1,30 +1,48 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
 
 export default function Home() {
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword');
+  const currentCategoryId = searchParams.get('category');
+
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(keyword, currentCategoryId);
+  }, [keyword, currentCategoryId]);
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (kw: string | null, cat: string | null) => {
     try {
       setLoading(true);
-      const res = await api.get('/products');
-      setProducts(res.data?.content || res.data || []);
+
+      const params = new URLSearchParams();
+      if (kw) params.append('keyword', kw);
+      if (cat) params.append('category', cat);
+
+      const res = await api.get(`/products?${params.toString()}`);
+      setProducts(res.data?.result?.content || res.data?.content || res.data || []);
     } catch (error) {
       console.error('Failed to fetch products', error);
-      setProducts([
-        { id: 1, name: 'Premium Wireless Headphones', price: 199.99, description: 'High-quality noise-canceling headphones.', stock: 10 },
-        { id: 2, name: 'Mechanical Keyboard', price: 89.50, description: 'RGB backlit mechanical keyboard with blue switches.', stock: 15 },
-        { id: 3, name: 'Ultra-thin Laptop', price: 1299.00, description: 'Lightweight laptop with powerful processor.', stock: 5 },
-        { id: 4, name: 'Smart Watch Series X', price: 299.00, description: 'Waterproof smart watch with health tracking.', stock: 20 },
-      ]);
+      setProducts([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/categories');
+      setCategories(res.data?.result || res.data || []);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
     }
   };
 
@@ -43,34 +61,70 @@ export default function Home() {
         <p className="text-primary-700">Find the best products at the best prices.</p>
       </div>
 
-      <div>
-        <h2 className="text-xl font-semibold mb-4 text-slate-800 border-b border-slate-200 pb-2">All Products</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden hover:shadow transition-shadow flex flex-col"
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to={keyword ? `/?keyword=${keyword}` : "/"}
+            className={`px-3 py-1.5 text-sm rounded-full transition-colors border ${!currentCategoryId
+              ? "bg-slate-800 text-white border-slate-800"
+              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              }`}
+          >
+            All Products
+          </Link>
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/?category=${cat.id}${keyword ? `&keyword=${keyword}` : ''}`}
+              className={`px-3 py-1.5 text-sm rounded-full transition-colors border ${currentCategoryId === String(cat.id)
+                ? "bg-primary-600 text-white border-primary-600"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                }`}
             >
-              <div className="h-40 bg-slate-50 flex items-center justify-center border-b border-slate-100">
-                <span className="text-slate-300 text-4xl">📦</span>
-              </div>
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className="font-medium text-slate-800 mb-1 line-clamp-2" title={product.name}>
-                  {product.name}
-                </h3>
-                <div className="text-lg font-bold text-slate-900 mt-1 mb-4">${product.price}</div>
-                <div className="mt-auto">
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="block text-center w-full py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded border border-slate-200 transition-colors"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            </div>
+              {cat.name}
+            </Link>
           ))}
         </div>
+      )}
+
+      <div>
+        <h2 className="text-xl font-semibold mb-4 text-slate-800 border-b border-slate-200 pb-2">
+          {keyword ? `Search Results for "${keyword}"` : "Our Products"}
+        </h2>
+
+        {products.length === 0 && !loading ? (
+          <div className="text-center py-12 bg-slate-50 rounded border border-slate-100">
+            <p className="text-slate-500">No products found for this criteria.</p>
+            <Link to="/" className="text-primary-600 hover:underline mt-2 inline-block text-sm">Clear filters</Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden hover:shadow transition-shadow flex flex-col"
+              >
+                <div className="h-40 bg-slate-50 flex items-center justify-center border-b border-slate-100">
+                  <span className="text-slate-300 text-4xl">📦</span>
+                </div>
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="font-medium text-slate-800 mb-1 line-clamp-2" title={product.name}>
+                    {product.name}
+                  </h3>
+                  <div className="text-lg font-bold text-slate-900 mt-1 mb-4">${product.price}</div>
+                  <div className="mt-auto">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="block text-center w-full py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded border border-slate-200 transition-colors"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

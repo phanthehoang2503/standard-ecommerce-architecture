@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
+import OrderDetail from './pages/OrderDetail';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/order/:id" element={<OrderDetail />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 mt-auto py-6 text-center text-slate-500">

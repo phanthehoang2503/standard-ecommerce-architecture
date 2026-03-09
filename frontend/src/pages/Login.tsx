@@ -17,12 +17,14 @@ export default function Login() {
     try {
       if (isLogin) {
         const res = await api.post('/auth/token', { username, password }).catch(() => ({ data: { token: 'mock-jwt-token-123' } }));
-        localStorage.setItem('token', res.data.token);
+        const token = res.data?.result?.token || res.data?.token;
+        if (token) localStorage.setItem('token', token);
         navigate('/');
       } else {
         await api.post('/users', { username, password, fullName: name, dob: "2000-01-01" });
         const res = await api.post('/auth/token', { username, password }).catch(() => ({ data: { token: 'mock-jwt-token-123' } }));
-        localStorage.setItem('token', res.data.token);
+        const token = res.data?.result?.token || res.data?.token;
+        if (token) localStorage.setItem('token', token);
         navigate('/');
       }
     } catch (error) {

@@ -10,6 +10,7 @@ export default defineConfig({
       '/users': 'http://localhost:8080',
       '/auth': 'http://localhost:8080',
       '/products': 'http://localhost:8080',
+      '/categories': 'http://localhost:8080',
       '/order': 'http://localhost:8080',
       '/cart': 'http://localhost:8080',
     }

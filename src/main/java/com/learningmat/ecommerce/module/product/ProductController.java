@@ -34,20 +34,21 @@ public class ProductController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "get a list of products")
 	public ApiResponse<Page<ProductResponse>> getProduct(
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false) Long category)
+	{
 		return ApiResponse.<Page<ProductResponse>>builder()
-				.result(productService.getProducts(page, size, sortBy, direction))
+				.result(productService.getProducts(page, size, sortBy, direction, keyword, category))
 				.build();
 	}
 
 	@GetMapping("/{productId}")
-	@PreAuthorize("hasRole('USER')")
 	@Operation(summary = "Get product by its id")
 	public ApiResponse<Product> getProductById(
 			@PathVariable Long productId) {
