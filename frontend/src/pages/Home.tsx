@@ -111,7 +111,7 @@ export default function Home() {
                   <h3 className="font-medium text-slate-800 mb-1 line-clamp-2" title={product.name}>
                     {product.name}
                   </h3>
-                  <div className="text-lg font-bold text-slate-900 mt-1 mb-4">${product.price}</div>
+                  <div className="text-lg font-bold text-slate-900 mt-1 mb-4">{product.price.toLocaleString()} ₫</div>
                   <div className="mt-auto">
                     <Link
                       to={`/product/${product.id}`}

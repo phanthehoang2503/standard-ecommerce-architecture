@@ -11,6 +11,8 @@ public record ProductRequest(
 
         @Min(value = 0, message = "INVALID_PRICE")
         long price,
+        @Min(value = 0, message = "INVALID_STOCK")
+        int stock,
 
         Long categoryId) {
 }

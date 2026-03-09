@@ -7,6 +7,7 @@ import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ProductMapper;
 import com.learningmat.ecommerce.module.category.Category;
 import com.learningmat.ecommerce.module.category.CategoryRepository;
+import com.learningmat.ecommerce.module.inventory.Inventory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +34,13 @@ public class ProductService {
                     });
             Product prod = productMapper.toProduct(productRequest);
             prod.setCategory(category);
+
+            Inventory inventory = new Inventory();
+            inventory.setQuantity(productRequest.stock());
+
+            inventory.setProduct(prod);
+            prod.setInventory(inventory);
+
             Product savedProd = productRepository.save(prod);
             log.info("Create product successful with ID: {}", savedProd.getId());
             return savedProd;

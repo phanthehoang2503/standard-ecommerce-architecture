@@ -100,7 +100,7 @@ export default function Profile() {
                       <div className="text-xs text-slate-500 mt-1">Placed on {order.date}</div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <div className="font-semibold text-slate-900">${order.total.toFixed(2)}</div>
+                      <div className="font-semibold text-slate-900">{order.total.toLocaleString()} ₫</div>
                       <Link
                         to={`/order/${order.id}`}
                         className="text-xs font-medium text-primary-600 hover:text-primary-700 border border-primary-100 bg-primary-50 px-3 py-1.5 rounded transition-colors cursor-pointer hover:bg-primary-100"

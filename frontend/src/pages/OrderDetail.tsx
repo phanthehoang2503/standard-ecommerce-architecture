@@ -91,8 +91,8 @@ export default function OrderDetail() {
                       <p className="text-slate-500 text-xs mt-1">Qty: {item.quantity}</p>
                     </div>
                     <div className="flex flex-col justify-center items-end text-sm">
-                      <span className="font-semibold text-slate-900">${((item.price) * (item.quantity)).toFixed(2)}</span>
-                      <span className="text-slate-400 text-xs mt-0.5">${item.price}/ea</span>
+                      <span className="font-semibold text-slate-900">{((item.price) * (item.quantity)).toLocaleString()} ₫</span>
+                      <span className="text-slate-400 text-xs mt-0.5">{item.price.toLocaleString()} ₫/ea</span>
                     </div>
                   </div>
                 ))
@@ -108,21 +108,21 @@ export default function OrderDetail() {
             <div className="space-y-3 text-sm border-b border-slate-100 pb-4 mb-4">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{total.toLocaleString()} ₫</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Shipping</span>
-                <span>$0.00</span>
+                <span>0 ₫</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Tax</span>
-                <span>$0.00</span>
+                <span>0 ₫</span>
               </div>
             </div>
 
             <div className="flex justify-between font-bold text-slate-900 text-lg">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{total.toLocaleString()} ₫</span>
             </div>
           </div>
 

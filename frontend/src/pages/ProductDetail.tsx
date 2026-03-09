@@ -72,7 +72,7 @@ export default function ProductDetail() {
           </h1>
 
           <div className="text-2xl font-semibold text-slate-900 mb-4 pb-4 border-b border-slate-100">
-            ${product.price}
+            {product.price.toLocaleString()} ₫
           </div>
 
           <p className="text-slate-600 mb-6 text-sm leading-relaxed">

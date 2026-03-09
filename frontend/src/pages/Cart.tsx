@@ -90,13 +90,13 @@ export default function Cart() {
                   <div>
                     <h3 className="font-medium text-slate-800 text-sm">{item.product.name}</h3>
                     <div className="text-slate-500 text-xs mt-1">
-                      ${item.product.price} &times; {item.quantity}
+                      {item.product.price.toLocaleString()} ₫ &times; {item.quantity}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="font-semibold text-slate-900">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    {(item.product.price * item.quantity).toLocaleString()} ₫
                   </div>
                   <button
                     onClick={() => removeItem(item.product.id)}
@@ -122,7 +122,7 @@ export default function Cart() {
               <div className="space-y-2 text-sm text-slate-600 mb-6">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{total.toLocaleString()} ₫</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -130,7 +130,7 @@ export default function Cart() {
                 </div>
                 <div className="border-t border-slate-200 pt-3 flex justify-between font-bold text-base text-slate-900">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{total.toLocaleString()} ₫</span>
                 </div>
               </div>
               <button
