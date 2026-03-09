@@ -49,7 +49,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/my-profile")
+    @GetMapping("/me")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     ApiResponse<User> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
         String username = jwt.getSubject();
@@ -58,7 +58,7 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/my-profile")
+    @PutMapping("/me")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     ApiResponse<User> updateMyProfile(
             @AuthenticationPrincipal Jwt jwt,

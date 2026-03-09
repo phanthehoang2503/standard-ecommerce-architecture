@@ -56,8 +56,8 @@ public class UserService {
     }
 
     public User getMyProfile(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
-            new AppException(ErrorCode.USER_NOTFOUND));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
     }
 
     public User updateMyProfile(String username, UserUpdateRequest request) {
@@ -65,7 +65,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
         userMapper.updateUser(user, request);
 
-        if (request.password() != null) {
+        if (request.password() != null && !request.password().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.password()));
         }
         return userRepository.save(user);
