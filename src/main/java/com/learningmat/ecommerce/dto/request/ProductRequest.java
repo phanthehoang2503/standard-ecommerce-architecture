@@ -10,7 +10,7 @@ public record ProductRequest(
         String name,
 
         @Min(value = 0, message = "INVALID_PRICE")
-        double price,
+        long price,
 
         Long categoryId) {
 }

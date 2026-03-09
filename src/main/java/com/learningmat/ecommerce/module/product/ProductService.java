@@ -90,8 +90,11 @@ public class ProductService {
                         log.warn("Failed to delete... can't find product with id: {}", id);
                         return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
                     });
-            productRepository.delete(prod);
-            log.info("Deleted complete product with id: {}", id);
+            prod.setActive(false);
+            productRepository.save(prod);
+            log.info(" product with(id, name) [{}, {}] is now unavailable",
+                    id,
+                    prod.getName());
         } catch (AppException e) {
             throw e;
         } catch (Exception e) {
