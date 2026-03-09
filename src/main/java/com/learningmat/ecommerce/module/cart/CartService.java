@@ -38,31 +38,52 @@ public class CartService {
     }
 
     public Cart addToCart(String username, CartRequest request) {
-        Cart cart = getCart(username);
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> {
-                    log.warn("Add product to cart failed because the product ID {} is invalid", request.productId());
-                    return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-                });
+        try{
+            Cart cart = getCart(username);
+            Product product = productRepository.findById(request.productId())
+                    .orElseThrow(() -> {
+                        log.warn("Add product to cart failed because the product ID {} not found", request.productId());
+                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                    });
 
-        log.info("User [{}] add product with ID: {} to cart (amount: {})",
-                username, request.productId(), request.quantity());
+            log.info("User [{}] add product with ID: {} to cart (amount: {})",
+                    username, request.productId(), request.quantity());
 
-        // check if the item is already in the cart
-        Optional<CartItem> existingItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(request.productId()))
-                .findFirst();
+            // check if the item is already in the cart
+            Optional<CartItem> existingItem = cart.getItems().stream()
+                    .filter(item -> item.getProduct().getId().equals(request.productId()))
+                    .findFirst();
 
-        if (existingItem.isPresent()) {
-            CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + request.quantity());
-        } else {
-            CartItem newItem = CartItem.builder()
-                    .cart(cart).product(product).quantity(request.quantity())
-                    .build();
-            cart.getItems().add(newItem);
+            int currentQuantityInCart = existingItem.map(CartItem::getQuantity).orElse(0);
+            int desiredQuantity = currentQuantityInCart + request.quantity();
+
+            int currentStock = product.getInventory().getQuantity();
+            if (desiredQuantity > currentStock) {
+                log.warn("User {} tried to add {} items, but only {} left in stock",
+                        username, desiredQuantity, currentStock);
+                throw new AppException(ErrorCode.OUT_OF_STOCK);
+            }
+
+            if (existingItem.isPresent()) {
+                CartItem item = existingItem.get();
+                item.setQuantity(item.getQuantity() + request.quantity());
+            } else {
+                CartItem newItem = CartItem.builder()
+                        .cart(cart).product(product).quantity(request.quantity())
+                        .build();
+                cart.getItems().add(newItem);
+            }
+            return cartRepository.save(cart);
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error while user {} trying to add to cart [product: {}; amount: {}]",
+                    username,
+                    productRepository.getProductById(request.productId()),
+                    request.quantity()
+            );
+            throw e;
         }
-        return cartRepository.save(cart);
     }
 
     public Cart removeFromCart(String username, Long productId) {
