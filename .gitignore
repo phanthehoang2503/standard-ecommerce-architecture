@@ -34,3 +34,12 @@ build/
 
 ### Custom ###
 logs/
+
+### config ###
+src/main/resources/application.properties
+
+.env
+docker-compose.yml
+
+test_e2e.js
+test_payment.js

@@ -51,14 +51,30 @@ export default function Cart() {
 
   const checkout = async () => {
     try {
-      await api.post('/order/checkout');
+      setLoading(true);
+      const res = await api.post('/order/checkout');
+      const order = res.data?.result || res.data;
+
+      if (order && order.id && order.totalAmount) {
+        const paymentRes = await api.get(`/api/payment/create-url?orderId=${order.id}&amount=${order.totalAmount}`);
+        const paymentUrl = paymentRes.data;
+        if (typeof paymentUrl === 'string' && paymentUrl.startsWith('http')) {
+          setCartItems([]);
+          window.location.href = paymentUrl; // Redirect to VNPay
+          return;
+        }
+      }
+
       alert('Checkout successful!');
       setCartItems([]);
       navigate('/profile');
     } catch (error) {
-      alert('Checkout mocked success');
-      setCartItems([]);
-      navigate('/profile');
+      console.error(error);
+      alert('Checkout failed! Please try again later.');
+    } finally {
+      if (window.location.hostname !== 'sandbox.vnpayment.vn') {
+        setLoading(false);
+      }
     }
   };
 

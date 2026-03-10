@@ -1,5 +1,6 @@
 package com.learningmat.ecommerce.module.order;
 
+import com.learningmat.ecommerce.event.PaymentSuccessEvent;
 import com.learningmat.ecommerce.module.cart.CartService;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
@@ -10,6 +11,7 @@ import com.learningmat.ecommerce.module.cart.CartRepository;
 import com.learningmat.ecommerce.module.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,7 @@ public class OrderService {
     public Order placeOrder(String username) {
         log.info("The user [{}] start to place an order", username);
         // find user
-        try{
+        try {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> {
                         log.warn("User not found, maybe their username ({}) not in the DB?", username);
@@ -49,9 +51,7 @@ public class OrderService {
             cart.getItems().forEach(
                     item -> inventoryService.reduceStock(
                             item.getProduct().getId(),
-                            item.getQuantity()
-                    )
-            );
+                            item.getQuantity()));
 
             Order order = Order.builder()
                     .user(user)
@@ -65,13 +65,11 @@ public class OrderService {
                             .product(item.getProduct())
                             .quantity(item.getQuantity())
                             .price(item.getProduct().getPrice())
-                            .build()
-                    ).toList();
+                            .build())
+                    .toList();
             order.setOrderItems(orderItems);
             Long total = orderItems.stream()
-                    .mapToLong(item ->
-                            (long) (item.getPrice() * item.getQuantity())
-                    ).sum();
+                    .mapToLong(item -> (long) (item.getPrice() * item.getQuantity())).sum();
             order.setTotalAmount(total);
             Order savedOrder = orderRepository.save(order);
             log.info("User [{}] placed order complete, OrderID [{}], Total Amount [{}]",
@@ -111,5 +109,21 @@ public class OrderService {
             log.warn("Something go wrong [Order id: {}, error: {}]", orderId, e.getMessage());
             throw e;
         }
+    }
+
+    @EventListener
+    public void handlePaymentSuccessEvent(PaymentSuccessEvent event) {
+        Long orderId = event.getOrderId();
+        log.info("OrderService heard PaymentSuccessEvent yell for order ID: {}", orderId);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> {
+                    log.warn("Order with ID[{}] not found", orderId);
+                    return new AppException(ErrorCode.ORDER_NOT_FOUND);
+                });
+
+        order.setPaymentStatus("PAID");
+        orderRepository.save(order);
+        log.info("Updated payment status of order with ID[{}] to PAID", orderId);
     }
 }

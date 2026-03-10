@@ -13,6 +13,7 @@ export default defineConfig({
       '/categories': 'http://localhost:8080',
       '/order': 'http://localhost:8080',
       '/cart': 'http://localhost:8080',
+      '/api': 'http://localhost:8080',
     }
   }
 })

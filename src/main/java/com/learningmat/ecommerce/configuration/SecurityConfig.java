@@ -35,7 +35,8 @@ public class SecurityConfig {
 			"/categories",
 			"/products",
 			"/swagger-ui/**",
-			"/swagger-ui.html"
+			"/swagger-ui.html",
+			"/api/payment/**"
 	};
 
 	@Bean

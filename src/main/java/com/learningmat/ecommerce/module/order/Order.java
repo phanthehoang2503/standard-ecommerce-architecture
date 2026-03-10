@@ -25,10 +25,14 @@ public class Order {
     private User user;
 
     private Long totalAmount;
-    private String status;
+    // PROCESSING, SHIPPED, DELIVERED, CANCELLED
+    private String status = "PROCESSING";
     private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    // PENDING, PAID, FAILED, REFUNDED
+    private String paymentStatus = "PENDING";
 
 }
