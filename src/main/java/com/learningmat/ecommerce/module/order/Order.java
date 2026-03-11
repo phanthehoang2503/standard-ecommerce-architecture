@@ -26,6 +26,7 @@ public class Order {
 
     private Long totalAmount;
     // PROCESSING, SHIPPED, DELIVERED, CANCELLED
+    @Builder.Default
     private String status = "PROCESSING";
     private LocalDateTime orderDate;
 
@@ -33,6 +34,7 @@ public class Order {
     private List<OrderItem> orderItems;
 
     // PENDING, PAID, FAILED, REFUNDED
+    @Builder.Default
     private String paymentStatus = "PENDING";
 
 }

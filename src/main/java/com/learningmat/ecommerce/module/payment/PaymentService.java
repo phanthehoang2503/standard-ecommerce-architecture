@@ -103,4 +103,41 @@ public class PaymentService {
             return "";
         }
     }
+
+    public boolean verifyIpnSignature(Map<String, String> params) {
+        String vnp_SecureHash = params.get("vnp_SecureHash");
+
+        // Create new map to remove 2 signature field out of hash
+        Map<String, String> fields = new HashMap<>();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (!entry.getKey().equals("vnp_SecureHash") && !entry.getKey().equals("vnp_SecureHashType")) {
+                fields.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        // Hash data same as when creating new URL
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        try {
+            Iterator<String> itr = fieldNames.iterator();
+            while (itr.hasNext()) {
+                String fieldName = itr.next();
+                String fieldValue = fields.get(fieldName);
+                if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue,
+                            StandardCharsets.US_ASCII));
+                    if (itr.hasNext()) {
+                        hashData.append('&');
+                    }
+                }
+            }
+            String signValue = hmacSHA512(vnp_HashSecret, hashData.toString());
+            return signValue.equals(vnp_SecureHash);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

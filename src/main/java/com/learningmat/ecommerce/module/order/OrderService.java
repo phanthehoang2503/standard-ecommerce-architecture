@@ -114,6 +114,7 @@ public class OrderService {
     @EventListener
     public void handlePaymentSuccessEvent(PaymentSuccessEvent event) {
         Long orderId = event.getOrderId();
+        Long vnpayAmount = event.getAmount();
         log.info("OrderService heard PaymentSuccessEvent yell for order ID: {}", orderId);
 
         Order order = orderRepository.findById(orderId)
@@ -121,6 +122,13 @@ public class OrderService {
                     log.warn("Order with ID[{}] not found", orderId);
                     return new AppException(ErrorCode.ORDER_NOT_FOUND);
                 });
+
+        // check if the amount is legit or not
+        if (!order.getTotalAmount().equals(vnpayAmount)) {
+            log.warn("Warning: Transaction amount are not match! Order ID [{}], System record [{}] vs VNPay amount [{}]",
+                    orderId, order.getTotalAmount(), vnpayAmount);
+            return;
+        }
 
         order.setPaymentStatus("PAID");
         orderRepository.save(order);
