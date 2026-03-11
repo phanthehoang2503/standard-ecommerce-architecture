@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: ecommerce-db
+    environment:
+      MYSQL_ROOT_PASSWORD: your_strong_db_password
+      MYSQL_DATABASE: ecommerce
+    ports:
+      - "3307:3306" # format is HOST_PORT:CONTAINER_PORT
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: ecommerce-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=your_strong_db_password
+    depends_on:
+      - db
+volumes:
+  db_data:
