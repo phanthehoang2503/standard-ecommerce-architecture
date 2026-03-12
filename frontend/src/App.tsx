@@ -6,8 +6,12 @@ import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
 import OrderDetail from './pages/OrderDetail';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
-function App() {
+import AdminDashboard from './pages/AdminDashboard';
+
+function AppContent() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
       <Navbar />
@@ -19,12 +23,21 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/order/:id" element={<OrderDetail />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
       <footer className="bg-white border-t border-slate-200 mt-auto py-6 text-center text-slate-500">
-        <p>&copy; {new Date().getFullYear()} E-Shop Intern Project. All rights reserved.</p>
+        <p>{t('footer.text')}</p>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProductDetail() {
+  const { t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
@@ -16,7 +18,7 @@ export default function ProductDetail() {
   const fetchProduct = async () => {
     try {
       const res = await api.get(`/products/${id}`);
-      setProduct(res.data);
+      setProduct(res.data?.result || res.data);
     } catch (error) {
       console.error('Failed to fetch product', error);
       setProduct({
@@ -39,11 +41,12 @@ export default function ProductDetail() {
 
     try {
       setAddingToCart(true);
-      await api.post('/cart/add', { productId: product.id, quantity: 1 });
-      alert('Added to cart!');
+      await api.post('/cart/add', { productId: Number(id), quantity: 1 });
+      alert(t('prod.addedSuccess'));
     } catch (error) {
-      console.error('Add to cart failed', error);
-      alert('Added to cart (mocked)!');
+      console.error('Failed to add to cart', error);
+      // Fallback for UI testing if no auth
+      alert(t('prod.addedMock'));
     } finally {
       setAddingToCart(false);
     }
@@ -55,7 +58,7 @@ export default function ProductDetail() {
   return (
     <div className="max-w-4xl mx-auto py-6">
       <button onClick={() => navigate(-1)} className="mb-6 text-sm text-slate-500 hover:text-slate-800 transition-colors">
-        &larr; Back to Products
+        &larr; {t('prod.back')}
       </button>
 
       <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
@@ -85,7 +88,7 @@ export default function ProductDetail() {
               disabled={addingToCart}
               className={`w-full bg-primary-600 text-white px-6 py-2.5 rounded text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm ${addingToCart ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {addingToCart ? 'Adding...' : 'Add to Cart'}
+              {addingToCart ? t('prod.adding') : t('home.addToCart')}
             </button>
           </div>
         </div>

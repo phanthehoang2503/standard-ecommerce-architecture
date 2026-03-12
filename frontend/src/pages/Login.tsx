@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Login() {
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +31,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Authentication failed', error);
-      alert('Authentication failed. Please check credentials.');
+      alert(t('login.authFailed'));
     } finally {
       setLoading(false);
     }
@@ -39,17 +41,17 @@ export default function Login() {
     <div className="max-w-md mx-auto mt-12 p-8 bg-white border border-slate-200 rounded shadow-sm">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          {isLogin ? 'Welcome Back' : 'Create Account'}
+          {isLogin ? t('login.welcomeBack') : t('login.createAccount')}
         </h1>
         <p className="text-slate-500 text-sm">
-          {isLogin ? 'Enter your details to access your account' : 'Sign up to start shopping with us'}
+          {isLogin ? t('login.enterDetails') : t('login.signUpToStart')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {!isLogin && (
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.fullName')}</label>
             <input
               type="text"
               required
@@ -61,7 +63,7 @@ export default function Login() {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.username')}</label>
           <input
             type="text"
             required
@@ -72,7 +74,7 @@ export default function Login() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('login.password')}</label>
           <input
             type="password"
             required
@@ -87,17 +89,17 @@ export default function Login() {
           disabled={loading}
           className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 rounded transition-colors shadow-sm flex items-center justify-center mt-2"
         >
-          {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
+          {loading ? t('login.pleaseWait') : (isLogin ? t('login.signIn') : t('login.signUp'))}
         </button>
       </form>
 
       <div className="mt-6 text-center text-slate-600 text-sm border-t border-slate-100 pt-4">
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
+        {isLogin ? t('login.noAccount') : t('login.hasAccount')}
         <button
           onClick={() => setIsLogin(!isLogin)}
           className="text-primary-600 hover:text-primary-700 font-medium hover:underline"
         >
-          {isLogin ? 'Create one' : 'Log in'}
+          {isLogin ? t('login.createOne') : t('login.logInHere')}
         </button>
       </div>
     </div>

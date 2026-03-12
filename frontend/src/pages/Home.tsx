@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const currentCategoryId = searchParams.get('category');
@@ -57,8 +59,8 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div className="bg-primary-50 rounded p-8 text-center border border-primary-100">
-        <h1 className="text-3xl font-bold text-primary-900 mb-2">Welcome to E-Shop</h1>
-        <p className="text-primary-700">Find the best products at the best prices.</p>
+        <h1 className="text-3xl font-bold text-primary-900 mb-2">{t('home.welcome')}</h1>
+        <p className="text-primary-700">{t('home.subtitle')}</p>
       </div>
 
       {categories.length > 0 && (
@@ -70,7 +72,7 @@ export default function Home() {
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
               }`}
           >
-            All Products
+            {t('home.allCategories')}
           </Link>
           {categories.map((cat) => (
             <Link
@@ -89,12 +91,12 @@ export default function Home() {
 
       <div>
         <h2 className="text-xl font-semibold mb-4 text-slate-800 border-b border-slate-200 pb-2">
-          {keyword ? `Search Results for "${keyword}"` : "Our Products"}
+          {keyword ? `${t('home.searchResults')} "${keyword}"` : t('home.ourProducts')}
         </h2>
 
         {products.length === 0 && !loading ? (
           <div className="text-center py-12 bg-slate-50 rounded border border-slate-100">
-            <p className="text-slate-500">No products found for this criteria.</p>
+            <p className="text-slate-500">{t('home.noProducts')}</p>
             <Link to="/" className="text-primary-600 hover:underline mt-2 inline-block text-sm">Clear filters</Link>
           </div>
         ) : (
@@ -117,7 +119,7 @@ export default function Home() {
                       to={`/product/${product.id}`}
                       className="block text-center w-full py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded border border-slate-200 transition-colors"
                     >
-                      View Details
+                      {t('home.viewDetails')}
                     </Link>
                   </div>
                 </div>
