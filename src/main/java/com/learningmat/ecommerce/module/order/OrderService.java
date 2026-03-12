@@ -12,6 +12,7 @@ import com.learningmat.ecommerce.module.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +75,7 @@ public class OrderService {
             Order savedOrder = orderRepository.save(order);
             log.info("User [{}] placed order complete, OrderID [{}], Total Amount [{}]",
                     username, savedOrder.getId(), savedOrder.getTotalAmount());
-            cartService.clearCart(username);
+            // cartService.clearCart(username);
             return savedOrder;
         } catch (AppException e) {
             throw e;
@@ -89,7 +90,11 @@ public class OrderService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
 
-        return orderRepository.findByUserId(user.getId());
+        return orderRepository.findByUserId(user.getId()).stream()
+                .filter(o -> o.getPaymentStatus().equals("PAID")
+                        || o.getPaymentStatus().equals("FAILED")
+                        || o.getOrderDate().isAfter(LocalDateTime.now().minusMinutes(15)))
+                .toList();
     }
 
     public Order getOrderDetails(String username, Long orderId) {
@@ -125,13 +130,39 @@ public class OrderService {
 
         // check if the amount is legit or not
         if (!order.getTotalAmount().equals(vnpayAmount)) {
-            log.warn("Warning: Transaction amount are not match! Order ID [{}], System record [{}] vs VNPay amount [{}]",
+            log.warn(
+                    "Warning: Transaction amount are not match! Order ID [{}], System record [{}] vs VNPay amount [{}]",
                     orderId, order.getTotalAmount(), vnpayAmount);
             return;
         }
 
         order.setPaymentStatus("PAID");
         orderRepository.save(order);
+
+        // if the transaction is complete, then clear the user cart for their next buy
+        cartService.clearCart(order.getUser().getUsername());
         log.info("Updated payment status of order with ID[{}] to PAID", orderId);
+    }
+
+    @Scheduled(fixedRate = 600000)
+    @Transactional
+    public void cleanupPendingOrder() {
+        log.info("Initialize clean up pending order process....");
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
+
+        List<Order> expOrders = orderRepository.findAllByPaymentStatusAndOrderDateBefore("PENDING", threshold);
+
+        for (Order order : expOrders) {
+            log.info("Canceling order with id [{}] due to expire", order.getId());
+            order.setPaymentStatus("FAILED");
+            order.setStatus("CANCELLED");
+
+            // refund to inventory
+            for (OrderItem item : order.getOrderItems()) {
+                inventoryService.restoreStock(item.getProduct().getId(), item.getQuantity());
+            }
+
+            orderRepository.save(order);
+        }
     }
 }

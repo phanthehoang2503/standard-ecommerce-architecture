@@ -8,6 +8,7 @@ public record ProductRequest(
         @NotBlank(message = "INVALID_NAME")
         @Size(min = 3, message = "INVALID_NAME")
         String name,
+        String imageUrl,
 
         @Min(value = 0, message = "INVALID_PRICE")
         long price,

@@ -27,6 +27,7 @@ public class User {
   private String password;
   private String fullName;
   private LocalDate dob;
+  private String address;
 
   @ElementCollection
   private Set<String> roles;

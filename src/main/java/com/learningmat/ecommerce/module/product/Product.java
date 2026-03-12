@@ -26,9 +26,10 @@ public class Product {
     private Inventory inventory;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "categories_id")
     private Category category;
 
     private String description;
+    private String imageUrl;
     private boolean isActive = true;
 }
