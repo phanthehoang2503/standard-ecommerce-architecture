@@ -16,6 +16,7 @@ const translations: Translations = {
     'nav.searchBtn': 'Search',
     'nav.go': 'Go',
     'nav.cart': 'Cart',
+    'nav.shop': 'Shop',
     'nav.profile': 'Profile',
     'nav.logout': 'Logout',
     'nav.login': 'Log In',
@@ -30,6 +31,16 @@ const translations: Translations = {
     'home.noProducts': 'No products found.',
     'home.addToCart': 'Add to Cart',
     'home.viewDetails': 'View Details',
+    'home.viewAll': 'View All',
+    'home.trending': 'Trending',
+    'home.topSaleLaptops': 'Top Sale Laptops',
+    'home.topSaleHeadphones': 'Top Sale Headphones',
+    'home.newArrivals': 'New Arrivals',
+    // Shop
+    'shop.title': 'Shop All Products',
+    'shop.categories': 'Categories',
+    'shop.allProducts': 'Showing All Products',
+    'shop.clearFilters': 'Clear all filters',
     // Cart
     'cart.title': 'Your Cart',
     'cart.empty': 'Your cart is empty',
@@ -111,9 +122,9 @@ const translations: Translations = {
     
     // Admin Dashboard
     'admin.title': 'Admin Dashboard',
-    'admin.tabProducts': '📦 Products Management',
-    'admin.tabCategories': '🏷️ Categories',
-    'admin.tabUsers': '👥 User Accounts',
+    'admin.tabProducts': 'Products Management',
+    'admin.tabCategories': 'Categories',
+    'admin.tabUsers': 'User Accounts',
     'admin.addProduct': '+ Add Product',
     'admin.addCategory': '+ New Category',
     'admin.loading': 'Loading...',
@@ -130,10 +141,11 @@ const translations: Translations = {
   },
   vi: {
     // Nav
-    'nav.search': 'Tìm kiếm sản phẩm...',
-    'nav.searchBtn': 'Tìm kiếm',
+    'nav.search': 'Bạn cần tìm gì?',
+    'nav.searchBtn': 'Tìm kiếm',
     'nav.go': 'Đi',
     'nav.cart': 'Giỏ hàng',
+    'nav.shop': 'Cửa hàng',
     'nav.profile': 'Tài khoản',
     'nav.logout': 'Đăng xuất',
     'nav.login': 'Đăng Nhập',
@@ -148,6 +160,16 @@ const translations: Translations = {
     'home.noProducts': 'Không tìm thấy sản phẩm.',
     'home.addToCart': 'Thêm vào giỏ hàng',
     'home.viewDetails': 'Xem chi tiết',
+    'home.viewAll': 'Xem tất cả',
+    'home.trending': 'Xu hướng',
+    'home.topSaleLaptops': 'Laptop bán chạy',
+    'home.topSaleHeadphones': 'Tai nghe phổ biến',
+    'home.newArrivals': 'Hàng mới về',
+    // Shop
+    'shop.title': 'Tất cả sản phẩm',
+    'shop.categories': 'Danh mục',
+    'shop.allProducts': 'Đang hiển thị tất cả',
+    'shop.clearFilters': 'Xóa tất cả bộ lọc',
     // Cart
     'cart.title': 'Giỏ hàng',
     'cart.empty': 'Giỏ hàng trống',
@@ -229,9 +251,9 @@ const translations: Translations = {
     
     // Admin Dashboard
     'admin.title': 'Bảng điều khiển Admin',
-    'admin.tabProducts': '📦 Quản lý Sản phẩm',
-    'admin.tabCategories': '🏷️ Danh mục',
-    'admin.tabUsers': '👥 Tài khoản Người dùng',
+    'admin.tabProducts': 'Quản lý Sản phẩm',
+    'admin.tabCategories': 'Danh mục',
+    'admin.tabUsers': 'Tài khoản Người dùng',
     'admin.addProduct': '+ Thêm Sản phẩm',
     'admin.addCategory': '+ Thêm Danh mục',
     'admin.loading': 'Đang tải...',
