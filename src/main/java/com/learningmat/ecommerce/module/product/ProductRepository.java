@@ -18,10 +18,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	 * "OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
 	 */
 	@Query(value = "select p from Product p left join fetch p.category " +
-			"WHERE (:categoryId is null or p.category.id = :categoryId) and " +
+			"WHERE p.isActive = true AND " +
+			"(:categoryId is null or p.category.id = :categoryId) and " +
 			"(:keyword is null or lower(p.name) like lower (concat('%', :keyword, '%')) " +
-			"or lower(p.description) like lower(concat('%', :keyword, '%')))", countQuery = "select  count(p) from Product p where "
-					+
+			"or lower(p.description) like lower(concat('%', :keyword, '%')))",
+			countQuery = "select count(p) from Product p where p.isActive = true and " +
 					"(:categoryId is null or p.category.id = :categoryId) and " +
 					"(:keyword is null or lower(p.name) like lower(concat('%', :keyword, '%')) " +
 					"or lower(p.description) like lower(concat('%', :keyword, '%')))")
