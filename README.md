@@ -1,9 +1,9 @@
 # Ecommerce Professional Backend
 
-Dự án Ecommerce Backend thiết kế theo chuẩn công nghiệp, tập trung vào tính Module hóa, bảo mật và hiệu năng.
+Dự án Ecommerce Backend thiết kế theo chuẩn công nghiệp, tập trung vào tính module hóa, bảo mật và hiệu năng.
 
 ## Mô tả hệ thống
-Hệ thống quản lý bán hàng tập trung vào việc xử lý các quy trình nghiệp vụ cốt lõi của một nền tảng thương mại điện tử. Mục tiêu chính là xây dựng một hệ thống API ổn định, dữ liệu nhất quán và dễ dàng mở rộng.
+Hệ thống monolith quản lý bán hàng tập trung vào việc xử lý các quy trình nghiệp vụ cốt lõi của một nền tảng thương mại điện tử. Mục tiêu là xây dựng một hệ thống API ổn định, dữ liệu nhất quán và dễ dàng mở rộng.
 Các mảng nghiệp vụ chính bao gồm:
 - **Hàng hóa**: Quản lý chi tiết sản phẩm, danh mục và tồn kho.
 - **Giao dịch**: Xử lý giỏ hàng và quy trình đặt hàng tối ưu.
@@ -31,6 +31,10 @@ Thiết kế theo mô hình **Layered Architecture** kết hợp với **Domain 
 - **Logging**: Hệ thống Logback ghi vết toàn bộ hành trình người dùng và phát hiện lỗi hệ thống thời gian thực.
 - **Xử lý lỗi cục bộ**: Trả về ApiResponse cho các trường hợp ngoại lệ.
 
+### Tích hợp thanh toán VNpay
+- **Bảo mật giao dịch**: Sử dụng cấu trúc hướng sự kiện với mã hóa HMAC-SHA512 đảm bảo an toàn chữ ký giao dịch.
+- **IPN Webhook & Callback**: Đồng bộ trạng thái đơn hàng trực tiếp từ VNPay Sandbox nội bộ qua tunnel.
+
 ## Tech stack trong dự án
 
 | Thành phần    | Công nghệ |
@@ -42,6 +46,7 @@ Thiết kế theo mô hình **Layered Architecture** kết hợp với **Domain 
 | **Đối chiếu** | MapStruct |
 | **Logging**   | SLF4J / Logback |
 | **Kiểm thử**  | JUnit 5 / Mockito |
+| **Deploy**    | Docker / Docker Compose |
 
 ## 📂 Cấu trúc dự án
 
@@ -56,17 +61,23 @@ src/main/java/com/learningmat/ecommerce/
     ├── category/      # Danh mục sản phẩm
     ├── inventory/     # Tồn kho
     ├── order/         # Đơn hàng
+    ├── payment/       # Tích hợp thanh toán VNPay
     ├── product/       # Sản phẩm
     └── user/          # Người dùng & Xác thực
 ```
 
 ## Cài đặt
 
-1. **Môi trường**: Java 17+, MySQL.
-2. **Cấu hình**: DB và key JWT trong `application.properties`(file cấu hình).
+1. **Môi trường**: Java 17+ (hoặc Temurin 21), MySQL.
+2. **Cấu hình**: Dựa trên file `application.properties.example` và `docker-compose.yml.example` để tạo file cấu hình cho DB, JWT Key và VNPay Sandbox.
 3. **Khởi chạy**:
-   ```bash
-   mvn spring-boot:run
-   ```
-4. **Tài liệu API**: Truy cập `/swagger-ui/index.html` sau khi chạy ứng dụng.
+   - **Cách 1 (Local):**
+     ```bash
+     mvn spring-boot:run
+     ```
+   - **Cách 2 (Docker):**
+     ```bash
+     docker-compose up -d --build
+     ```
+4. **Tài liệu API**: Truy cập `/swagger-ui/index.html` sau khi chạy ứng dụng web thành công.
 

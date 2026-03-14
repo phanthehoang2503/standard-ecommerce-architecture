@@ -43,3 +43,4 @@ docker-compose.yml
 
 test_e2e.js
 test_payment.js
+seed_products.py
