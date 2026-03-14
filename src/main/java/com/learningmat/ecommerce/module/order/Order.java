@@ -32,6 +32,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+    private String cartHash;
 
     // PENDING, PAID, FAILED, REFUNDED
     @Builder.Default

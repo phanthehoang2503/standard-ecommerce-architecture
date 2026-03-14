@@ -12,14 +12,17 @@ import com.learningmat.ecommerce.module.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,6 +52,33 @@ public class OrderService {
                     });
             log.info("Found user [{}] cart, start transaction...", username);
 
+            String currentHash = generateCartHash(cart);
+
+            var pageable = PageRequest.of(0,1);
+            List<Order> pendingOrders = orderRepository.findLastestPendingOrder(user.getId(), pageable);
+
+            // check old pending order to see if anything change
+            if (!pendingOrders.isEmpty()) {
+                Order existingOrder = pendingOrders.getFirst();
+
+                // if the user send another checkout, this condition will check the hash
+                // to see if user's current cart is the same as their previous order
+                // if it true then we just return the old order
+                if (currentHash.equals(existingOrder.getCartHash())) {
+                    log.info("Reuse existing order ID: {}", existingOrder.getId());
+                    return existingOrder;
+                }
+                // if their current checkout is differed from their last one
+                // then we remove the previous one to create their new order
+                // this will prevent someone spam the checkout to reserve stock without buying
+                log.info("Cart changed, restock for old order ID [{}]", existingOrder.getId());
+                for (OrderItem item : existingOrder.getOrderItems()) {
+                    inventoryService.restoreStock(item.getProduct().getId(), item.getQuantity());
+                }
+                orderRepository.delete(existingOrder);
+            }
+
+            // nothing change then we create a new one for user
             cart.getItems().forEach(
                     item -> inventoryService.reduceStock(
                             item.getProduct().getId(),
@@ -59,6 +89,7 @@ public class OrderService {
                     .status("PENDING")
                     .orderDate(LocalDateTime.now())
                     .orderItems(new ArrayList<>())
+                    .cartHash(currentHash) // leave a fingerprint.
                     .build();
             List<OrderItem> orderItems = cart.getItems().stream()
                     .map(item -> OrderItem.builder()
@@ -90,11 +121,9 @@ public class OrderService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
 
-        return orderRepository.findByUserId(user.getId()).stream()
-                .filter(o -> o.getPaymentStatus().equals("PAID")
-                        || o.getPaymentStatus().equals("FAILED")
-                        || o.getOrderDate().isAfter(LocalDateTime.now().minusMinutes(15)))
-                .toList();
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
+
+        return orderRepository. findValidOrderHistory(user.getId(), threshold);
     }
 
     public Order getOrderDetails(String username, Long orderId) {
@@ -164,5 +193,12 @@ public class OrderService {
 
             orderRepository.save(order);
         }
+    }
+
+    private String generateCartHash(Cart cart) {
+        return cart.getItems().stream()
+                .sorted(Comparator.comparing(item -> item.getProduct().getId()))
+                .map(item -> item.getProduct().getId() + ":" + item.getQuantity())
+                .collect(Collectors.joining("|"));
     }
 }
