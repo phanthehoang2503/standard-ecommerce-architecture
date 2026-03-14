@@ -3,6 +3,7 @@ package com.learningmat.ecommerce.module.user;
 import com.learningmat.ecommerce.dto.response.ApiResponse;
 import com.learningmat.ecommerce.dto.request.UserCreateRequest;
 import com.learningmat.ecommerce.dto.request.UserUpdateRequest;
+import com.learningmat.ecommerce.enums.Role;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,22 @@ public class UserController {
 
     @PostMapping
     ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request) {
-        User user = userService.createUser(request);
+        UserCreateRequest publicRequest = new UserCreateRequest(
+                request.username(), request.password(), request.fullName(), request.dob(),
+                List.of(Role.USER.name())
+        );
+        User user = userService.createUser(publicRequest);
         return ApiResponse.<User>builder()
                 .result(user)
+                .build();
+    }
+
+    @PostMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    ApiResponse<User> createStaff(@RequestBody @Valid UserCreateRequest request) {
+        User staff = userService.createUser(request);
+        return ApiResponse.<User>builder()
+                .result(staff)
                 .build();
     }
 

@@ -26,7 +26,12 @@ public class UserService {
         User user = userMapper.toUser(request);
         // role assign
         HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+
+        if (request.roles() != null && !request.roles().isEmpty()) {
+            roles.addAll(request.roles());
+        } else {
+            roles.add(Role.USER.name());
+        }
 
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(roles);
