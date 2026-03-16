@@ -94,21 +94,21 @@ const translations: Translations = {
     'login.createOne': 'Create one',
     'login.logInHere': 'Log in',
     'login.authFailed': 'Authentication failed. Please check credentials.',
-    
+
     // Cart Alerts
     'cart.checkoutSuccess': 'Checkout successful!',
     'cart.checkoutFail': 'Checkout failed! Please try again later.',
-    
+
     // Product Alerts
     'prod.addedSuccess': 'Added to cart!',
     'prod.addedMock': 'Added to cart (mocked)!',
-    
+
     // Mini Cart
     'minicart.recentItems': 'Recent Items',
     'minicart.empty': 'Your cart is empty',
     'minicart.moreItems': 'more items...',
     'minicart.viewFull': 'Click to see full details',
-    
+
     // Profile Edit
     'profile.fullName': 'Full Name',
     'profile.dob': 'Date of Birth',
@@ -119,7 +119,7 @@ const translations: Translations = {
     'profile.paymentLabel': 'Payment: ',
     'profile.addressLabel': 'Address',
     'profile.noAddress': 'No address provided. Please add one to checkout.',
-    
+
     // Admin Dashboard
     'admin.title': 'Admin Dashboard',
     'admin.tabProducts': 'Products Management',
@@ -150,7 +150,7 @@ const translations: Translations = {
     'nav.logout': 'Đăng xuất',
     'nav.login': 'Đăng Nhập',
     // Footer
-    'footer.text': 'Được xây dựng với sự hỗ trợ của LLM',
+    'footer.text': '...',
     // Home
     'home.welcome': 'Chào mừng đến với E-Shop',
     'home.subtitle': 'Khám phá những sản phẩm tuyệt vời với giá cực kỳ ưu đãi.',
@@ -223,21 +223,21 @@ const translations: Translations = {
     'login.createOne': 'Tạo ngay',
     'login.logInHere': 'Đăng nhập ngay',
     'login.authFailed': 'Xác thực thất bại. Vui lòng kiểm tra lại thông tin.',
-    
+
     // Cart Alerts
     'cart.checkoutSuccess': 'Thanh toán thành công!',
     'cart.checkoutFail': 'Thanh toán thất bại! Vui lòng thử lại sau.',
-    
+
     // Product Alerts
     'prod.addedSuccess': 'Đã thêm vào giỏ hàng!',
     'prod.addedMock': 'Đã thêm vào giỏ hàng (giả lập)!',
-    
+
     // Mini Cart
     'minicart.recentItems': 'Sản phẩm gần đây',
     'minicart.empty': 'Giỏ hàng của bạn đang trống',
     'minicart.moreItems': 'sản phẩm khác...',
     'minicart.viewFull': 'Nhấn để xem chi tiết',
-    
+
     // Profile Edit
     'profile.fullName': 'Họ và tên',
     'profile.dob': 'Ngày sinh',
@@ -248,7 +248,7 @@ const translations: Translations = {
     'profile.paymentLabel': 'Thanh toán: ',
     'profile.addressLabel': 'Địa chỉ',
     'profile.noAddress': 'Chưa có địa chỉ. Vui lòng thêm địa chỉ để thanh toán.',
-    
+
     // Admin Dashboard
     'admin.title': 'Bảng điều khiển Admin',
     'admin.tabProducts': 'Quản lý Sản phẩm',
