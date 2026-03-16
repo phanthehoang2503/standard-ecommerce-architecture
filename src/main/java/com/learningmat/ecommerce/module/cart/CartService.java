@@ -28,13 +28,13 @@ public class CartService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOTFOUND));
 
-        return cartRepository.findByUserId(user.getId())
-                .orElseGet(() -> {
-                    Cart cart = Cart.builder()
-                            .user(user)
-                            .items(new ArrayList<>()).build();
-                    return cartRepository.save(cart);
-                });
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElse(Cart.builder()
+                        .user(user)
+                        .items(new ArrayList<>()).build());
+
+        cart.getItems().removeIf(item -> item.getProduct() == null);
+        return cartRepository.save(cart);
     }
 
     public Cart addToCart(String username, CartRequest request) {

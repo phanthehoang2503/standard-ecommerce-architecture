@@ -26,7 +26,9 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn (name = "product_id")
     private Product product;
+    private String productName;
 
     private int quantity;
     private double price;
+
 }

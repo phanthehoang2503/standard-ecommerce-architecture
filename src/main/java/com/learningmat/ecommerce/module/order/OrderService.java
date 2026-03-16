@@ -54,7 +54,7 @@ public class OrderService {
 
             String currentHash = generateCartHash(cart);
 
-            var pageable = PageRequest.of(0,1);
+            var pageable = PageRequest.of(0, 1);
             List<Order> pendingOrders = orderRepository.findLastestPendingOrder(user.getId(), pageable);
 
             // check old pending order to see if anything change
@@ -80,9 +80,14 @@ public class OrderService {
 
             // nothing change then we create a new one for user
             cart.getItems().forEach(
-                    item -> inventoryService.reduceStock(
-                            item.getProduct().getId(),
-                            item.getQuantity()));
+                    item -> {
+                        if (item.getProduct() == null) {
+                            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                        }
+                        inventoryService.reduceStock(
+                                item.getProduct().getId(),
+                                item.getQuantity());
+                    });
 
             Order order = Order.builder()
                     .user(user)
@@ -95,6 +100,7 @@ public class OrderService {
                     .map(item -> OrderItem.builder()
                             .order(order)
                             .product(item.getProduct())
+                            .productName(item.getProduct().getName())
                             .quantity(item.getQuantity())
                             .price(item.getProduct().getPrice())
                             .build())
@@ -123,7 +129,7 @@ public class OrderService {
 
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
 
-        return orderRepository. findValidOrderHistory(user.getId(), threshold);
+        return orderRepository.findValidOrderHistory(user.getId(), threshold);
     }
 
     public Order getOrderDetails(String username, Long orderId) {
@@ -188,7 +194,13 @@ public class OrderService {
 
             // refund to inventory
             for (OrderItem item : order.getOrderItems()) {
-                inventoryService.restoreStock(item.getProduct().getId(), item.getQuantity());
+                if (item.getProduct() != null) {
+                    inventoryService.restoreStock(item.getProduct().getId(), item.getQuantity());
+                } else {
+                    log.warn(
+                            "Skipping stock restoration for OrderItem [{}]: Product is null (likely deactivated/soft-deleted)",
+                            item.getId());
+                }
             }
 
             orderRepository.save(order);
