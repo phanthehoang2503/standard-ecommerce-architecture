@@ -11,6 +11,7 @@ import com.learningmat.ecommerce.module.inventory.Inventory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,7 @@ public class ProductService {
         }
     }
 
+    @Cacheable(value = "products", key = "{#page, #size, #keyword, #categoryId}")
     public Page<ProductResponse> getProducts(
             int page, int size, String sortBy, String direction,
             String keyword, Long categoryId) {
