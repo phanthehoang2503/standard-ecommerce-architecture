@@ -16,6 +16,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(1006, "Product not found", HttpStatus.NOT_FOUND),
     CATEGORY_NOT_FOUND(1013, "Category not available in system", HttpStatus.NOT_FOUND),
     ORDER_NOT_FOUND(1014, "Order not found", HttpStatus.NOT_FOUND),
+    PRODUCT_NOT_AVAILABLE(1015, "Product is currently not available...", HttpStatus.NOT_FOUND),
 
     USER_EXISTED(1007, "Username already exist...", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(1009, "Fail to login", HttpStatus.UNAUTHORIZED),
