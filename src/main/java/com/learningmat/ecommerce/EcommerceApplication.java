@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,7 @@ import com.learningmat.ecommerce.module.user.UserRepository;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableCaching
 public class EcommerceApplication {
 
 	public static void main(String[] args) {
