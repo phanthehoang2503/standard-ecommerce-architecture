@@ -8,6 +8,8 @@ import com.learningmat.ecommerce.mapper.ProductMapper;
 import com.learningmat.ecommerce.module.category.Category;
 import com.learningmat.ecommerce.module.category.CategoryRepository;
 import com.learningmat.ecommerce.module.inventory.Inventory;
+import com.learningmat.ecommerce.module.review.ReviewService;
+import com.learningmat.ecommerce.utilsRecord.ReviewStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +27,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
+    private final ReviewService reviewService;
 
     public Product createProduct(ProductRequest productRequest) {
         try {
@@ -63,9 +66,30 @@ public class ProductService {
         return productPage.map(productMapper::toProductResponse);
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return productMapper.toProductResponse(product);
+    }
+
+    public ProductResponse getProductDetails(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        ReviewStats stats = reviewService.getReviewStats(productId);
+
+        ProductResponse response = productMapper.toProductResponse(product);
+
+        return new ProductResponse(
+                response.id(),
+                response.name(),
+                response.imageUrl(),
+                response.price(),
+                response.stockQuantity(),
+                response.categoryName(),
+                stats.AvgRating(),
+                stats.reviewCount()
+        );
     }
 
     public Product updateProduct(Long id, ProductRequest productRequest) {
@@ -93,6 +117,14 @@ public class ProductService {
         }
     }
 
+    public Product getProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.warn("Can't find product with id [{}]", productId);
+                    return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+    }
+
     public void deleteProduct(Long id) {
         try {
             Product prod = productRepository.findById(id)
@@ -111,6 +143,5 @@ public class ProductService {
             log.error("System error when try to delete product with ID {}: {}", id, e.getMessage());
             throw e;
         }
-
     }
 }

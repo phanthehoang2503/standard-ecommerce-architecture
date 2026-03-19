@@ -50,9 +50,9 @@ public class ProductController {
 
 	@GetMapping("/{productId}")
 	@Operation(summary = "Get product by its id")
-	public ApiResponse<Product> getProductById(
+	public ApiResponse<ProductResponse> getProductById(
 			@PathVariable Long productId) {
-		return ApiResponse.<Product>builder()
+		return ApiResponse.<ProductResponse>builder()
 				.result(productService.getProductById(productId))
 				.build();
 	}
