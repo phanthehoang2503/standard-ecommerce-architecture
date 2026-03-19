@@ -2,6 +2,7 @@ package com.learningmat.ecommerce.exception;
 
 import com.learningmat.ecommerce.dto.response.ApiResponse;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +55,22 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.<Void>builder()
                         .code(ErrorCode.FORBIDDEN_ACCESS.getCode())
                         .message("You don't have permission")
+                        .build());
+    }
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    ResponseEntity<ApiResponse<Void>> handlingDataIntegrityViolationException(DataIntegrityViolationException exception) {
+        // keyword check
+        String message = exception.getMostSpecificCause().getMessage();
+
+        ErrorCode error = ErrorCode.DATABASE_CONSTRAINT_VIOLATION;
+
+        if (message.contains("Duplicate entry")) error = ErrorCode.USER_EXISTED;
+
+        return ResponseEntity.status(error.getStatusCode())
+                .body(ApiResponse.<Void>builder()
+                        .code(error.getCode())
+                        .message(error.getMessage())
                         .build());
     }
 }
