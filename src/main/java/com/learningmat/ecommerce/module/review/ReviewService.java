@@ -7,6 +7,7 @@ import com.learningmat.ecommerce.module.product.Product;
 import com.learningmat.ecommerce.module.product.ProductService;
 import com.learningmat.ecommerce.module.user.User;
 import com.learningmat.ecommerce.module.user.UserService;
+import com.learningmat.ecommerce.utilsRecord.ReviewStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponse createReview(Long productId, String username, ReviewRequest request) {
 
-        Product product = productService.getProductById(productId);
+        Product product = productService.getProduct(productId);
         // Who create a review?
         User user = userService.getMyProfile(username);
 
@@ -43,7 +44,14 @@ public class ReviewService {
 
     public Page<ReviewResponse> getReviewsFromProduct(Long productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        
+        return reviewRepository.findByProductId(productId, pageable).
+                map(reviewMapper::toReviewResponse);
+    }
 
-        return reviewRepository.findByProductId(productId, pageable).map(reviewMapper::toReviewResponse);
+    public ReviewStats getReviewStats(Long productId) {
+        Double avgRating = reviewRepository.getAverageRating(productId);
+        int  reviewCount = reviewRepository.countByProductId(productId);
+        return new ReviewStats(avgRating, reviewCount);
     }
 }
