@@ -33,7 +33,9 @@ public class CartService {
                         .user(user)
                         .items(new ArrayList<>()).build());
 
-        cart.getItems().removeIf(item -> item.getProduct() == null);
+        cart.getItems().removeIf(
+                item -> item.getProduct() == null || !item.getProduct().isActive()
+        );
         return cartRepository.save(cart);
     }
 
@@ -45,6 +47,11 @@ public class CartService {
                         log.warn("Add product to cart failed because the product ID {} not found", request.productId());
                         return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
                     });
+
+            if (!product.isActive()) {
+                log.warn("User {} tried to add an inactive product ID[{}]", username, product.getId());
+                throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+            }
 
             log.info("User [{}] add product with ID: {} to cart (amount: {})",
                     username, request.productId(), request.quantity());
