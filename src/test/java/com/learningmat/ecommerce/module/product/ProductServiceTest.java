@@ -1,6 +1,8 @@
 package com.learningmat.ecommerce.module.product;
 
+import com.learningmat.ecommerce.dto.response.ProductResponse;
 import com.learningmat.ecommerce.exception.AppException;
+import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ProductMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,24 +34,35 @@ class ProductServiceTest {
         mockProduct.setName("Laptop");
         mockProduct.setPrice(30000000);
 
+        ProductResponse mockResponse = new ProductResponse(
+                productId, "Laptop", "image.png", 30000000, 10, "Electronics", 0.0, 0);
+
         // return mock product
         when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
 
-        Product result = productService.getProductById(productId);
+        when(productMapper.toProductResponse(mockProduct)).thenReturn(mockResponse);
 
-        Assertions.assertEquals("Laptop", result.getName());
-        Assertions.assertEquals(30000000, result.getPrice());
+        // Product result = productService.getProductById(productId);
+        // act
+        ProductResponse res = productService.getProductById(productId);
+
+        // assert
+        Assertions.assertEquals("Laptop", res.name());
+        Assertions.assertEquals(30000000, res.price());
     }
 
     @Test
     void getProductById_invalidId_throwsException() {
-        // Arrange
+        // 1. Arrange
         Long productId = 25L;
-        // return empty
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
+        // 2. Act & Assert
         AppException exception = Assertions.assertThrows(AppException.class, () -> {
             productService.getProductById(productId);
         });
+
+        Assertions.assertEquals(ErrorCode.PRODUCT_NOT_FOUND, exception.getErrorCode());
     }
+
 }
