@@ -53,7 +53,7 @@ public class ProductController {
 	public ApiResponse<ProductResponse> getProductById(
 			@PathVariable Long productId) {
 		return ApiResponse.<ProductResponse>builder()
-				.result(productService.getProductById(productId))
+				.result(productService.getProductDetails(productId))
 				.build();
 	}
 
