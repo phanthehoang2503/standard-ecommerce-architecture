@@ -14,6 +14,6 @@ public interface ReviewMapper {
     @Mapping(target = "createdAt", ignore = true)
     Review toReview(ReviewRequest request);
 
-    @Mapping(source = "user.username", target = "username")
+    @Mapping(target = "username", source = "user.username")
     ReviewResponse toReviewResponse(Review review);
 }

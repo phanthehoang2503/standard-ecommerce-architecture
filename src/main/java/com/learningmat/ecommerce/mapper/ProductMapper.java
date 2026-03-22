@@ -25,5 +25,7 @@ public interface ProductMapper {
 
     @Mapping(target = "stockQuantity", source = "inventory.quantity")
     @Mapping(target = "categoryName", source = "category.name")
+    @Mapping(target = "averageRating", ignore = true)
+    @Mapping(target = "reviewCount", ignore = true)
     ProductResponse toProductResponse(Product product);
 }
