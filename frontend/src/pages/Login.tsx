@@ -20,13 +20,19 @@ export default function Login() {
       if (isLogin) {
         const res = await api.post('/auth/token', { username, password }).catch(() => ({ data: { token: 'mock-jwt-token-123' } }));
         const token = res.data?.result?.token || res.data?.token;
-        if (token) localStorage.setItem('token', token);
+        if (token) {
+          localStorage.setItem('token', token);
+          localStorage.setItem('username', username);
+        }
         navigate('/');
       } else {
         await api.post('/users', { username, password, fullName: name, dob: "2000-01-01" });
         const res = await api.post('/auth/token', { username, password }).catch(() => ({ data: { token: 'mock-jwt-token-123' } }));
         const token = res.data?.result?.token || res.data?.token;
-        if (token) localStorage.setItem('token', token);
+        if (token) {
+          localStorage.setItem('token', token);
+          localStorage.setItem('username', username);
+        }
         navigate('/');
       }
     } catch (error) {
