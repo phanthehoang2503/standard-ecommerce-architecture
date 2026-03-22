@@ -29,13 +29,28 @@ public class SecurityConfig {
 	@Value("${jwt.signerKey}")
 	protected String SIGNER_KEY;
 
-	private final String[] PUBLIC_ENDPOINT = {
-			"/users", "/auth/token", "/auth/introspect",
-			"/v3/api-docs/**",
+	// private final String[] PUBLIC_ENDPOINT = {
+	// "/users", "/auth/token", "/auth/introspect",
+	// "/v3/api-docs/**",
+	// "/categories",
+	// "/products",
+	// "/swagger-ui/**",
+	// "/swagger-ui.html",
+	// "/api/payment/**"
+	// };
+
+	private final String[] PUBLIC_GET_ENDPOINTS = {
 			"/categories",
-			"/products",
+			"/products/**",
+			"/v3/api-docs/**",
 			"/swagger-ui/**",
-			"/swagger-ui.html",
+			"/swagger-ui.html"
+	};
+
+	private final String[] PUBLIC_POST_ENDPOINTS = {
+			"/users",
+			"/auth/token",
+			"/auth/introspect",
 			"/api/payment/**"
 	};
 
@@ -48,10 +63,9 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(
-				request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT)
-						.permitAll()
-						.requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINT)
-						.permitAll()
+				request -> request
+						.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+						.requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
 						.anyRequest().authenticated());
 		http
 				.oauth2ResourceServer(oauth2 -> oauth2
