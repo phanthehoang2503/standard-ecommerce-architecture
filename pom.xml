@@ -119,18 +119,38 @@
 		</dependency>
 
 		<!-- Cache -->
-		<!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache -->
+		<!-- Source:
+		https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 
-		<!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
+		<!-- Source:
+		https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+
+		<!-- Mapstruct & Lombok link -->
+		<!-- Source: https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok-mapstruct-binding</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+
+		<!-- Database changes repo-->
+		<!-- Source: https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>5.0.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>
@@ -148,6 +168,8 @@
 							<artifactId>mapstruct-processor</artifactId>
 							<version>1.6.3</version>
 						</path>
+
+
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
