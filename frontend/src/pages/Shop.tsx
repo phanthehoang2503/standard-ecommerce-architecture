@@ -151,7 +151,7 @@ export default function Shop() {
                   <span className="text-slate-300 text-5xl group-hover:scale-110 transition-transform duration-500">📦</span>
                   <div className="absolute top-2 right-2 flex gap-1">
                      <span className="bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-slate-600 shadow-sm border border-slate-100 uppercase italic">
-                       {product.category?.name || 'Item'}
+                       {product.categoryName || product.category?.name || 'Item'}
                      </span>
                   </div>
                 </div>

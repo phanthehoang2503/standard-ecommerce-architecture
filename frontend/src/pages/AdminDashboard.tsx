@@ -119,23 +119,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await api.post('/products', {
-        ...newProduct,
-        price: Number(newProduct.price),
-        stock: Number(newProduct.stock),
-        category: { id: Number(newProduct.categoryId) }
-      });
-      setShowProductModal(false);
-      setNewProduct({ name: '', price: '', stock: '', categoryId: '', description: '' });
-      fetchData('products');
-    } catch (err) {
-      alert('Failed to add product');
-    }
-  };
-
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -184,8 +167,8 @@ export default function AdminDashboard() {
     setNewProduct({
       name: p.name,
       price: p.price.toString(),
-      stock: p.inventory?.quantity?.toString() || p.stock?.toString() || '0',
-      categoryId: p.category?.id?.toString() || '',
+      stock: (p.stockQuantity ?? p.stock ?? p.inventory?.quantity ?? 0).toString(),
+      categoryId: p.categoryId?.toString() || p.category?.id?.toString() || '',
       description: p.description || ''
     });
     setShowProductModal(true);

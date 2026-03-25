@@ -166,10 +166,16 @@ export default function ProductDetail() {
         <button onClick={() => navigate('/shop')} className="hover:text-primary-600 transition-colors">Shop</button>
         <span>/</span>
         <button 
-          onClick={() => navigate(`/shop?categoryName=${product.categoryName}`)} 
+          onClick={() => {
+            const catId = product.category?.id;
+            const catName = product.categoryName || product.category?.name;
+            if (catId) navigate(`/shop?category=${catId}`);
+            else if (catName) navigate(`/shop?keyword=${encodeURIComponent(catName)}`);
+            else navigate('/shop');
+          }} 
           className="hover:text-primary-600 transition-colors"
         >
-          {product.categoryName || 'Category'}
+          {product.categoryName || product.category?.name || 'Category'}
         </button>
         <span>/</span>
         <span className="text-slate-900 font-medium truncate">{product.name}</span>
@@ -195,12 +201,18 @@ export default function ProductDetail() {
         {/* Info Section */}
         <div className="lg:w-1/2 flex flex-col pt-4">
           <div className="flex items-center gap-3 mb-4">
-            <span className="bg-primary-50 text-primary-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-primary-100">
-              {product.categoryName || 'Store'}
+            <span 
+              onClick={() => {
+                const catId = product.category?.id;
+                if (catId) navigate(`/shop?category=${catId}`);
+              }}
+              className="bg-primary-50 text-primary-600 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-primary-100 cursor-pointer hover:bg-primary-100 transition-colors"
+            >
+              {product.categoryName || product.category?.name || 'Store'}
             </span>
             <div className="flex items-center gap-1 text-amber-400">
-              {'★'.repeat(5)}
-              <span className="text-slate-400 text-xs font-bold ml-1">({reviews.length} reviews)</span>
+              {'★'.repeat(Math.round(product.averageRating || 5))}
+              <span className="text-slate-400 text-xs font-bold ml-1">({product.reviewCount || reviews.length} reviews)</span>
             </div>
           </div>
 
@@ -300,9 +312,12 @@ export default function ProductDetail() {
             <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Technical details</h3>
               <div className="divide-y divide-slate-100 border-y border-slate-100">
+            <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Technical details</h3>
+              <div className="divide-y divide-slate-100 border-y border-slate-100">
                 {[
-                  { label: 'Category', value: product.categoryName || 'N/A' },
-                  { label: 'Stock Available', value: `${product.stockQuantity || 0} Units` },
+                  { label: 'Category', value: product.categoryName || product.category?.name || 'N/A' },
+                  { label: 'Stock Available', value: `${product.stockQuantity ?? product.stock ?? product.inventory?.quantity ?? 0} Units` },
                   { label: 'Product ID', value: `#${product.id}` }
                 ].map((spec, i) => (
                   <div key={i} className="py-5 flex items-center justify-between group">
@@ -310,6 +325,22 @@ export default function ProductDetail() {
                     <span className="font-black text-slate-800 group-hover:text-primary-600 transition-colors">{spec.value}</span>
                   </div>
                 ))}
+
+                {/* Placeholder for future dynamic map-based specifications */}
+                {product.specifications && Object.entries(product.specifications).map(([key, value]: [string, any], i) => (
+                  <div key={`dyn-${i}`} className="py-5 flex items-center justify-between group">
+                    <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">{key}</span>
+                    <span className="font-black text-slate-800 group-hover:text-primary-600 transition-colors">{String(value)}</span>
+                  </div>
+                ))}
+
+                {(!product.specifications || Object.keys(product.specifications).length === 0) && (
+                  <div className="py-12 text-center opacity-30">
+                    <p className="text-xs font-bold uppercase tracking-[0.3em]">Detailed specifications coming soon</p>
+                  </div>
+                )}
+              </div>
+            </div>
               </div>
             </div>
           )}
