@@ -138,7 +138,11 @@ export default function Profile() {
                   <button 
                     onClick={() => {
                       setIsEditing(false);
-                      setEditForm({ name: user?.name, dob: user?.dob || '' });
+                      setEditForm({ 
+                        name: user?.name || '', 
+                        dob: user?.dob || '', 
+                        address: user?.address || '' 
+                      });
                     }}
                     className="flex-1 py-1.5 bg-slate-100 text-slate-600 text-sm font-medium rounded hover:bg-slate-200 transition-colors"
                   >
