@@ -7,7 +7,6 @@ import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ReviewMapper;
 import com.learningmat.ecommerce.module.product.Product;
 import com.learningmat.ecommerce.module.product.ProductRepository;
-import com.learningmat.ecommerce.module.product.ProductService;
 import com.learningmat.ecommerce.module.user.User;
 import com.learningmat.ecommerce.module.user.UserService;
 import com.learningmat.ecommerce.utilsRecord.ReviewStats;

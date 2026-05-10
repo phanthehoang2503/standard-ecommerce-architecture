@@ -13,6 +13,7 @@ import com.learningmat.ecommerce.utilsRecord.ReviewStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,29 +30,25 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ReviewService reviewService;
 
+    @CacheEvict(value = "products", allEntries = true)
     public Product createProduct(ProductRequest productRequest) {
-        try {
-            Category category = categoryRepository.findById(productRequest.categoryId())
-                    .orElseThrow(() -> {
-                        log.warn("The category [{}] not found in system please check again", productRequest.categoryId());
-                        return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
-                    });
-            Product prod = productMapper.toProduct(productRequest);
-            prod.setCategory(category);
+        Category category = categoryRepository.findById(productRequest.categoryId())
+                .orElseThrow(() -> {
+                    log.warn("The category [{}] not found in system please check again", productRequest.categoryId());
+                    return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
+                });
+        Product prod = productMapper.toProduct(productRequest);
+        prod.setCategory(category);
 
-            Inventory inventory = new Inventory();
-            inventory.setQuantity(productRequest.stock());
+        Inventory inventory = new Inventory();
+        inventory.setQuantity(productRequest.stock());
 
-            inventory.setProduct(prod);
-            prod.setInventory(inventory);
+        inventory.setProduct(prod);
+        prod.setInventory(inventory);
 
-            Product savedProd = productRepository.save(prod);
-            log.info("Create product successful with ID: {}", savedProd.getId());
-            return savedProd;
-        } catch (Exception e) {
-            log.error("Error when creating product: {}", e.getMessage());
-            throw e;
-        }
+        Product savedProd = productRepository.save(prod);
+        log.info("Create product successful with ID: {}", savedProd.getId());
+        return savedProd;
     }
 
     @Cacheable(value = "products", key = "{#page, #size, #keyword, #categoryId}")
@@ -88,33 +85,26 @@ public class ProductService {
                 response.stockQuantity(),
                 response.categoryName(),
                 stats.AvgRating() != null ? stats.AvgRating() : 0.0,
-                stats.reviewCount()
-        );
+                stats.reviewCount());
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public Product updateProduct(Long id, ProductRequest productRequest) {
-        try {
-            Product prod = productRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.warn("Failed update... can't find product with id: {}", id);
-                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-                    });
-            Category category = categoryRepository.findById(productRequest.categoryId())
-                            .orElseThrow(() -> {
-                                log.warn("Category [{}] not found in the system.", productRequest.categoryId());
-                                return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
-                            });
-            prod.setCategory(category);
-            productMapper.updateProduct(prod, productRequest);
-            Product updatedProduct = productRepository.save(prod);
-            log.info("Updated complete product with id: {}", id);
-            return updatedProduct;
-        } catch (AppException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("System error when try to update product with ID {}: {}", id, e.getMessage());
-            throw e;
-        }
+        Product prod = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Failed update... can't find product with id: {}", id);
+                    return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+        Category category = categoryRepository.findById(productRequest.categoryId())
+                .orElseThrow(() -> {
+                    log.warn("Category [{}] not found in the system.", productRequest.categoryId());
+                    return new AppException(ErrorCode.CATEGORY_NOT_FOUND);
+                });
+        prod.setCategory(category);
+        productMapper.updateProduct(prod, productRequest);
+        Product updatedProduct = productRepository.save(prod);
+        log.info("Updated complete product with id: {}", id);
+        return updatedProduct;
     }
 
     public Product getProduct(Long productId) {
@@ -125,23 +115,17 @@ public class ProductService {
                 });
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long id) {
-        try {
-            Product prod = productRepository.findById(id)
-                    .orElseThrow(() -> {
-                        log.warn("Failed to delete... can't find product with id: {}", id);
-                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-                    });
-            prod.setActive(false);
-            productRepository.save(prod);
-            log.info(" product with(id, name) [{}, {}] is now unavailable",
-                    id,
-                    prod.getName());
-        } catch (AppException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("System error when try to delete product with ID {}: {}", id, e.getMessage());
-            throw e;
-        }
+        Product prod = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Failed to delete... can't find product with id: {}", id);
+                    return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                });
+        prod.setActive(false);
+        productRepository.save(prod);
+        log.info(" product with(id, name) [{}, {}] is now unavailable",
+                id,
+                prod.getName());
     }
 }
