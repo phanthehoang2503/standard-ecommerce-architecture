@@ -19,8 +19,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - DB_PASSWORD=root
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
+      - VNP_HASH_SECRET=${VNP_HASH_SECRET}
+      - JWT_SIGNERKEY=${JWT_SIGNERKEY}
+
     depends_on:
       - db
       - redis
