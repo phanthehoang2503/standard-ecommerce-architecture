@@ -19,8 +19,18 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     depends_on:
       - db
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
+
 
   loki:
     image: grafana/loki:main-3d3a75e
