@@ -2,6 +2,7 @@ package com.learningmat.ecommerce;
 
 import java.util.HashSet;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +21,8 @@ import com.learningmat.ecommerce.module.user.UserRepository;
 public class EcommerceApplication {
 
 	public static void main(String[] args) {
+		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+		dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(EcommerceApplication.class, args);
 	}
 

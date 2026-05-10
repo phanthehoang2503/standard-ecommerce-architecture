@@ -44,7 +44,8 @@ public class SecurityConfig {
 			"/products/**",
 			"/v3/api-docs/**",
 			"/swagger-ui/**",
-			"/swagger-ui.html"
+			"/swagger-ui.html",
+			"/error"
 	};
 
 	private final String[] PUBLIC_POST_ENDPOINTS = {
@@ -66,6 +67,7 @@ public class SecurityConfig {
 				request -> request
 						.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
 						.requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+						.requestMatchers("/actuator/**").permitAll()
 						.anyRequest().authenticated());
 		http
 				.oauth2ResourceServer(oauth2 -> oauth2
