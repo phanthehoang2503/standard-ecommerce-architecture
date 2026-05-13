@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -35,7 +34,7 @@ class UserServiceTest {
 
     @Test
     void createUser_success() {
-        //arrange
+        // arrange
         UserCreateRequest request = UserCreateRequest.builder()
                 .username("newuser")
                 .password("pass123")
@@ -51,10 +50,10 @@ class UserServiceTest {
         when(passwordEncoder.encode(request.password())).thenReturn("encodedPass");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        //act
+        // act
         User result = userService.createUser(request);
 
-        //assert
+        // assert
         Assertions.assertNotNull(result);
         Assertions.assertEquals("newuser", result.getUsername());
         verify(userRepository).save(any(User.class));
@@ -62,7 +61,7 @@ class UserServiceTest {
 
     @Test
     void createUser_alreadyExisted_throwsException() {
-        //arrange
+        // arrange
         UserCreateRequest request = UserCreateRequest.builder()
                 .username("existinguser")
                 .password("pass")
@@ -71,7 +70,7 @@ class UserServiceTest {
                 .build();
         when(userRepository.existsByUsername(request.username())).thenReturn(true);
 
-        //act & assert
+        // act & assert
         AppException exception = Assertions.assertThrows(AppException.class,
                 () -> userService.createUser(request));
         Assertions.assertEquals(ErrorCode.USER_EXISTED, exception.getErrorCode());
@@ -79,21 +78,21 @@ class UserServiceTest {
 
     @Test
     void getMyProfile_success() {
-        //arrange
+        // arrange
         String username = "testuser";
         User user = User.builder().username(username).build();
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        //act
+        // act
         User result = userService.getMyProfile(username);
 
-        //assert
+        // assert
         Assertions.assertEquals(username, result.getUsername());
     }
 
     @Test
     void updateMyProfile_success() {
-        //arrange
+        // arrange
         String username = "testuser";
         UserUpdateRequest request = UserUpdateRequest.builder()
                 .password("updatedPass")
@@ -106,10 +105,10 @@ class UserServiceTest {
         when(passwordEncoder.encode(request.password())).thenReturn("encodedPass");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        //act
+        // act
         User result = userService.updateMyProfile(username, request);
 
-        //assert
+        // assert
         verify(userMapper).updateUser(user, request);
         verify(userRepository).save(user);
     }
