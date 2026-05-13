@@ -34,10 +34,31 @@ build/
 
 ### Custom ###
 logs/
+*.log
 
 ### config ###
 .env
 
+### OS specific files ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### Executables and Binaries ###
+*.exe
+*.dll
+*.so
+*.dylib
+*.msi
+*.deb
+*.rpm
+*.bin
+
+### Scripts (Local/Scratch) ###
 test_e2e.js
 test_payment.js
 seed_products.py
