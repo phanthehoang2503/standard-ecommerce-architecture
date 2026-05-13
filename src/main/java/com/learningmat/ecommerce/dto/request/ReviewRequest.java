@@ -3,7 +3,9 @@ package com.learningmat.ecommerce.dto.request;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 
+@Builder
 public record ReviewRequest(
         @Min(1) @Max(5) int rating,
         @NotBlank String comment) {
