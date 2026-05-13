@@ -2,10 +2,12 @@ package com.learningmat.ecommerce.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder
 public record UserCreateRequest(
 		@NotBlank(message = "INVALID_USERNAME") @Size(min = 3, message = "INVALID_USERNAME") String username,
 		@NotBlank(message = "INVALID_USERNAME") @Size(min = 6, message = "INVALID_PASSWORD") String password,
