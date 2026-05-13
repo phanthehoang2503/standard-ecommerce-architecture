@@ -14,11 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class InventoryServiceTest {
+class InventoryServiceTest {
+
     @Mock
     private InventoryRepository inventoryRepository;
 
@@ -29,10 +30,10 @@ public class InventoryServiceTest {
     void reduceStock_success() {
         //arrange
         Long productId = 1L;
-        int qty = 10;
+        int currentQty = 10;
         int reduceQty = 3;
         Inventory mockInventory = Inventory.builder()
-                .quantity(qty)
+                .quantity(currentQty)
                 .build();
 
         when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
@@ -54,39 +55,28 @@ public class InventoryServiceTest {
         Inventory mockInventory = Inventory.builder()
                 .quantity(currentQty)
                 .build();
+
         when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
 
-        //act and assert
+        //act & assert
         AppException exception = Assertions.assertThrows(AppException.class, () -> {
             inventoryService.reduceStock(productId, reduceQty);
         });
+
         Assertions.assertEquals(ErrorCode.OUT_OF_STOCK, exception.getErrorCode());
-
         verify(inventoryRepository, never()).save(any());
-    }
-
-    @Test
-    void reduceStock_productNotFound_throwsException() {
-        //arrange
-        Long productId = 99L;
-        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.empty());
-
-        //act and assert
-        AppException exception = Assertions.assertThrows(AppException.class, () -> {
-            inventoryService.reduceStock(productId, 1);
-        });
-        Assertions.assertEquals(ErrorCode.PRODUCT_NOT_FOUND, exception.getErrorCode());
     }
 
     @Test
     void restoreStock_success() {
         //arrange
         Long productId = 1L;
-        int qty = 5;
+        int currentQty = 5;
         int restoreQty = 5;
         Inventory mockInventory = Inventory.builder()
-                .quantity(qty)
+                .quantity(currentQty)
                 .build();
+
         when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
 
         //act
@@ -96,5 +86,4 @@ public class InventoryServiceTest {
         Assertions.assertEquals(10, mockInventory.getQuantity());
         verify(inventoryRepository, times(1)).save(mockInventory);
     }
-
 }

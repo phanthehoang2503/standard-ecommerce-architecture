@@ -28,6 +28,7 @@ class ProductServiceTest {
 
     @Test
     void getProductByID_validId_success() {
+        // arrange
         Long productId = 1L;
         Product mockProduct = new Product();
         mockProduct.setId(productId);
@@ -42,7 +43,6 @@ class ProductServiceTest {
 
         when(productMapper.toProductResponse(mockProduct)).thenReturn(mockResponse);
 
-        // Product result = productService.getProductById(productId);
         // act
         ProductResponse res = productService.getProductById(productId);
 
@@ -53,11 +53,11 @@ class ProductServiceTest {
 
     @Test
     void getProductById_invalidId_throwsException() {
-        // 1. Arrange
+        // arrange
         Long productId = 25L;
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        // 2. Act & Assert
+        // act & assert
         AppException exception = Assertions.assertThrows(AppException.class, () -> {
             productService.getProductById(productId);
         });
