@@ -84,7 +84,7 @@ public class ProductService {
                 response.price(),
                 response.stockQuantity(),
                 response.categoryName(),
-                stats.AvgRating() != null ? stats.AvgRating() : 0.0,
+                stats.avgRating() != null ? stats.avgRating() : 0.0,
                 stats.reviewCount());
     }
 

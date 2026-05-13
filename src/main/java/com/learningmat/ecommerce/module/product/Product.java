@@ -5,6 +5,7 @@ import com.learningmat.ecommerce.module.inventory.Inventory;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(name = "product")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLRestriction("is_active=true")

@@ -1,7 +1,7 @@
 package com.learningmat.ecommerce.utilsRecord;
 
 public record ReviewStats(
-        Double AvgRating,
+        Double avgRating,
         int reviewCount
 ) {
 }
