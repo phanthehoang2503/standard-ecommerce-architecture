@@ -1,4 +1,4 @@
-package com.learningmat.ecommerce.module.review;
+package com.learningmat.ecommerce.unit_test;
 
 import com.learningmat.ecommerce.dto.request.ReviewRequest;
 import com.learningmat.ecommerce.dto.response.ReviewResponse;
@@ -7,6 +7,9 @@ import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.ReviewMapper;
 import com.learningmat.ecommerce.module.product.Product;
 import com.learningmat.ecommerce.module.product.ProductRepository;
+import com.learningmat.ecommerce.module.review.Review;
+import com.learningmat.ecommerce.module.review.ReviewRepository;
+import com.learningmat.ecommerce.module.review.ReviewService;
 import com.learningmat.ecommerce.module.user.User;
 import com.learningmat.ecommerce.module.user.UserService;
 import com.learningmat.ecommerce.utilsRecord.ReviewStats;

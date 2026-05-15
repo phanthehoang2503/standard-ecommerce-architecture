@@ -1,4 +1,4 @@
-package com.learningmat.ecommerce.module.Inventory;
+package com.learningmat.ecommerce.unit_test;
 
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
