@@ -3,7 +3,9 @@ package com.learningmat.ecommerce.dto.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record ProductRequest(
         @NotBlank(message = "INVALID_NAME")
         @Size(min = 3, message = "INVALID_NAME")
