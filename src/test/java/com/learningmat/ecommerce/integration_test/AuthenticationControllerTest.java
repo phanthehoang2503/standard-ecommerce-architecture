@@ -1,7 +1,7 @@
-package com.learningmat.ecommerce.integration;
+package com.learningmat.ecommerce.integration_test;
 
 import com.learningmat.ecommerce.dto.request.AuthenticationRequest;
-import com.learningmat.ecommerce.dto.request.UserUpdateRequest;
+import com.learningmat.ecommerce.dto.request.UserCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,42 +20,63 @@ import java.time.LocalDate;
 @ActiveProfiles("test")
 public class AuthenticationControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @Test
-    void authenticate_success() throws Exception{
-        // register a testuser
-        UserUpdateRequest registerReq = UserUpdateRequest.builder()
-                .username("testuser")
-                .password("123123")
-                .fullName("testuser")
-                .dob(LocalDate.of(1995,2,2))
-                .build();
+        @Test
+        void authenticate_success() throws Exception {
+                // register a testuser
+                UserCreateRequest registerReq = UserCreateRequest.builder()
+                                .username("testuser")
+                                .password("123123")
+                                .fullName("testuser")
+                                .dob(LocalDate.of(1995, 2, 2))
+                                .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerReq)));
+                mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(registerReq)));
 
-        // try login
-        AuthenticationRequest authReq = AuthenticationRequest.builder()
-                .username("testuser")
-                .password("123123")
-                .build();
+                // try login
+                AuthenticationRequest authReq = AuthenticationRequest.builder()
+                                .username("testuser")
+                                .password("123123")
+                                .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/auth/token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authReq)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.result.authenticated").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.result.token").exists());
-    }
+                mockMvc.perform(MockMvcRequestBuilders.post("/auth/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authReq)))
+                                .andExpect(MockMvcResultMatchers.status().isOk())
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.result.authenticated").value(true))
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.result.token").exists());
+        }
 
-    @Test
-    void login_invalidPassword_fails() {
-        
-    }
+        @Test
+        void login_invalidPassword_fails() throws Exception {
+                // arrange
+                UserCreateRequest registerUser = UserCreateRequest.builder()
+                                .username("testuser")
+                                .password("123123")
+                                .fullName("Test User")
+                                .dob(LocalDate.of(2000, 1, 1))
+                                .build();
+
+                mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(registerUser)));
+
+                // act
+                AuthenticationRequest authReq = AuthenticationRequest.builder()
+                                .username("testuser")
+                                .password("wrongpass")
+                                .build();
+                mockMvc.perform(MockMvcRequestBuilders.post("/auth/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authReq)))
+                                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(1009));
+        }
 }
