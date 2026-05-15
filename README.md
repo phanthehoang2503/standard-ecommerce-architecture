@@ -70,7 +70,7 @@ src/main/java/com/learningmat/ecommerce/
 
 ## Cài đặt
 
-1. **Môi trường**: Java 17+ (hoặc Temurin 21), MySQL.
+1. **Môi trường**: Java 17+, MySQL.
 2. **Cấu hình**: Dựa trên file `application.properties.example` và `docker-compose.yml.example` để tạo file cấu hình cho DB, JWT Key và VNPay Sandbox.
 3. **Khởi chạy**:
    - **Cách 1 (Local):**
@@ -82,4 +82,3 @@ src/main/java/com/learningmat/ecommerce/
      docker-compose up -d --build
      ```
 4. **Tài liệu API**: Truy cập `/swagger-ui/index.html` sau khi chạy ứng dụng web thành công.
-

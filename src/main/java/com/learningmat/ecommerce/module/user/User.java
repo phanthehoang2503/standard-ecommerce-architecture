@@ -1,4 +1,4 @@
-package com.learningmat.ecommerce.module.user;
+package com.learningmat.ecommerce.integration.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
