@@ -13,6 +13,7 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "inventory", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
     Product toProduct(ProductRequest request);
 
     @Mapping(target = "id", ignore = true)

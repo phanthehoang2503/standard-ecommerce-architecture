@@ -1,9 +1,12 @@
-package com.learningmat.ecommerce.module.category;
+package com.learningmat.ecommerce.unit_test;
 
 import com.learningmat.ecommerce.dto.request.CategoryRequest;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.CategoryMapper;
+import com.learningmat.ecommerce.module.category.Category;
+import com.learningmat.ecommerce.module.category.CategoryRepository;
+import com.learningmat.ecommerce.module.category.CategoryService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

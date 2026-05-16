@@ -1,10 +1,13 @@
-package com.learningmat.ecommerce.module.user;
+package com.learningmat.ecommerce.unit_test;
 
 import com.learningmat.ecommerce.dto.request.UserCreateRequest;
 import com.learningmat.ecommerce.dto.request.UserUpdateRequest;
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
 import com.learningmat.ecommerce.mapper.UserMapper;
+import com.learningmat.ecommerce.module.user.User;
+import com.learningmat.ecommerce.module.user.UserRepository;
+import com.learningmat.ecommerce.module.user.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
