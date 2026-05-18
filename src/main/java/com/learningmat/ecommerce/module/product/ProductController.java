@@ -38,11 +38,10 @@ public class ProductController {
 	public ApiResponse<Page<ProductResponse>> getProduct(
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction,
+			@RequestParam(defaultValue = "id") String sortBy,
+			@RequestParam(defaultValue = "desc") String direction,
 			@RequestParam(required = false) String keyword,
-			@RequestParam(required = false) Long category)
-	{
+			@RequestParam(required = false) Long category) {
 		return ApiResponse.<Page<ProductResponse>>builder()
 				.result(productService.getProducts(page, size, sortBy, direction, keyword, category))
 				.build();
@@ -59,7 +58,7 @@ public class ProductController {
 
 	@PutMapping("/{productId}")
 	@PreAuthorize("hasRole('STAFF')")
-	@Operation(method = "???", summary = "update product information", description = "for update product and must have higher role to use this")
+	@Operation(summary = "update product information", description = "for update product and must have higher role to use this")
 	public ApiResponse<Product> updateProduct(
 			@PathVariable Long productId,
 			@RequestBody @Valid ProductRequest productRequest) {
