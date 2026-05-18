@@ -30,25 +30,40 @@ class InventoryServiceTest {
     void reduceStock_success() {
         //arrange
         Long productId = 1L;
-        int currentQty = 10;
         int reduceQty = 3;
-        Inventory mockInventory = Inventory.builder()
-                .quantity(currentQty)
-                .build();
 
-        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
+        when(inventoryRepository.reduceStock(productId, reduceQty)).thenReturn(1);
 
         //act
         inventoryService.reduceStock(productId, reduceQty);
 
         //assert
-        Assertions.assertEquals(7, mockInventory.getQuantity());
-        verify(inventoryRepository, times(1)).save(mockInventory);
+        verify(inventoryRepository, times(1)).reduceStock(productId, reduceQty);
+        verify(inventoryRepository, never()).save(any());
     }
+
+
+    @Test
+    void reduceStock_productNotFound_throwsException() {
+        //arrange
+        Long productId = 1L;
+        int reduceQty = 5;
+
+        when(inventoryRepository.reduceStock(productId, reduceQty)).thenReturn(0);
+        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.empty());
+
+        //act & assert
+        AppException exception = Assertions.assertThrows(AppException.class, () -> {
+            inventoryService.reduceStock(productId, reduceQty);
+        });
+
+        Assertions.assertEquals(ErrorCode.PRODUCT_NOT_FOUND, exception.getErrorCode());
+        verify(inventoryRepository, never()).save(any());
+    }
+
 
     @Test
     void reduceStock_outOfStock_throwsException() {
-        //arrange
         Long productId = 1L;
         int currentQty = 2;
         int reduceQty = 5;
@@ -56,9 +71,9 @@ class InventoryServiceTest {
                 .quantity(currentQty)
                 .build();
 
+        when(inventoryRepository.reduceStock(productId, reduceQty)).thenReturn(0);
         when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
 
-        //act & assert
         AppException exception = Assertions.assertThrows(AppException.class, () -> {
             inventoryService.reduceStock(productId, reduceQty);
         });
@@ -71,19 +86,33 @@ class InventoryServiceTest {
     void restoreStock_success() {
         //arrange
         Long productId = 1L;
-        int currentQty = 5;
         int restoreQty = 5;
-        Inventory mockInventory = Inventory.builder()
-                .quantity(currentQty)
-                .build();
 
-        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.of(mockInventory));
+        when(inventoryRepository.restoreStock(productId, restoreQty)).thenReturn(1);
 
         //act
         inventoryService.restoreStock(productId, restoreQty);
 
         //assert
-        Assertions.assertEquals(10, mockInventory.getQuantity());
-        verify(inventoryRepository, times(1)).save(mockInventory);
+        verify(inventoryRepository, times(1)).restoreStock(productId, restoreQty);
+        verify(inventoryRepository, never()).save(any());
+    }
+
+    @Test
+    void restoreStock_productNotFound_throwsException() {
+        // arrange
+        Long productId = 1L;
+        int restoreQty = 5;
+
+        when(inventoryRepository.restoreStock(productId, restoreQty)).thenReturn(0);
+        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.empty());
+
+        // act & assert
+        AppException exception = Assertions.assertThrows(AppException.class, () -> {
+            inventoryService.restoreStock(productId, restoreQty);
+        });
+
+        Assertions.assertEquals(ErrorCode.PRODUCT_NOT_FOUND, exception.getErrorCode());
+        verify(inventoryRepository, never()).save(any());
     }
 }
