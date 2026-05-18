@@ -2,6 +2,7 @@ package com.learningmat.ecommerce.module.inventory;
 
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,27 +14,44 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
 
+    @Transactional
     public void reduceStock(Long productId, int quantity) {
-        // find product from Product table and pass it to inventory
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        log.info("Stock reduction for product with ID [{}], quantity = [{}]", productId, quantity);
 
-        // if the stock running low then throw error
-        if (inventory.getQuantity() < quantity)
-            throw new AppException(ErrorCode.OUT_OF_STOCK);
+        int updateRow = inventoryRepository.reduceStock(productId, quantity);
 
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventoryRepository.save(inventory);
+        if (updateRow == 0) {
+            log.warn("Stock reduction for product with ID [{}] failed.", productId);
+            Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow(
+                    () -> {
+                        log.error("Product with ID [{}] not found in the inventory", productId);
+                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                    }
+            );
+
+            if (inventory.getQuantity() < quantity) {
+                log.warn("Product with ID [{}] is currently out of stock or insufficient, current stock: {}",
+                        productId, inventory.getQuantity());
+                throw new AppException(ErrorCode.OUT_OF_STOCK);
+            }
+        }
+        log.info("Stock reduced for product ID [{}]", productId);
     }
 
+    @Transactional
     public void restoreStock(Long productId, int quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow(
-                () -> {
-                    log.warn("Can't find product with id [{}]", productId);
-                    return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-                });
+        log.info("stock restoration for product ID [{}], quantity [{}]", productId, quantity);
 
-        inventory.setQuantity(quantity + inventory.getQuantity());
-        inventoryRepository.save(inventory);
+        int updateProduct = inventoryRepository.restoreStock(productId, quantity);
+
+        if (updateProduct == 0) {
+            Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow(
+                    () -> {
+                        log.warn("Product with ID [{}] not found", productId);
+                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+                    }
+            );
+        }
+        log.info("Stock restored successfully for product ID [{}]", productId);
     }
 }
