@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public record UserCreateRequest(
 		@NotBlank(message = "INVALID_USERNAME") @Size(min = 3, message = "INVALID_USERNAME") String username,
-		@NotBlank(message = "INVALID_USERNAME") @Size(min = 6, message = "INVALID_PASSWORD") String password,
+		@NotBlank(message = "INVALID_PASSWORD") @Size(min = 6, message = "INVALID_PASSWORD") String password,
 
 		String fullName,
 		LocalDate dob,

@@ -26,7 +26,8 @@ public enum ErrorCode {
     USER_CART_NOTFOUND(1010, "Users cart not found", HttpStatus.NOT_FOUND),
 
     USER_ALREADY_EXISTS(1400, "Username already exists", HttpStatus.BAD_REQUEST),
-    DATABASE_CONSTRAINT_VIOLATION(1401, "Database constraint violation", HttpStatus.BAD_REQUEST)
+    DATABASE_CONSTRAINT_VIOLATION(1401, "Database constraint violation", HttpStatus.BAD_REQUEST),
+    STOCK_UPDATE_FAILED(1402, "Stock update failed due to concurrent modification", HttpStatus.INTERNAL_SERVER_ERROR)
     ;
     private int code;
     private String message;

@@ -2,7 +2,7 @@ package com.learningmat.ecommerce.module.inventory;
 
 import com.learningmat.ecommerce.exception.AppException;
 import com.learningmat.ecommerce.exception.ErrorCode;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +33,9 @@ public class InventoryService {
                 log.warn("Product with ID [{}] is currently out of stock or insufficient, current stock: {}",
                         productId, inventory.getQuantity());
                 throw new AppException(ErrorCode.OUT_OF_STOCK);
+            } else {
+                log.error("Stock reduction failed due to concurrent modification for product ID [{}]", productId);
+                throw new AppException(ErrorCode.STOCK_UPDATE_FAILED);
             }
         }
         log.info("Stock reduced for product ID [{}]", productId);
@@ -45,12 +48,8 @@ public class InventoryService {
         int updateProduct = inventoryRepository.restoreStock(productId, quantity);
 
         if (updateProduct == 0) {
-            Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow(
-                    () -> {
-                        log.warn("Product with ID [{}] not found", productId);
-                        return new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-                    }
-            );
+            log.error("Cannot restock due to product with ID [{}] not found", productId);
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
         log.info("Stock restored successfully for product ID [{}]", productId);
     }

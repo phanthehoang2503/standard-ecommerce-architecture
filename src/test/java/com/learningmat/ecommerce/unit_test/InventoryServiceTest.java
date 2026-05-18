@@ -105,7 +105,6 @@ class InventoryServiceTest {
         int restoreQty = 5;
 
         when(inventoryRepository.restoreStock(productId, restoreQty)).thenReturn(0);
-        when(inventoryRepository.findByProductId(productId)).thenReturn(Optional.empty());
 
         // act & assert
         AppException exception = Assertions.assertThrows(AppException.class, () -> {
